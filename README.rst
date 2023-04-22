@@ -11,12 +11,6 @@ Installation
 
 .. code-block:: bash
 
-    pip install git+https://github.com/AquaQuokka/pyrew.git
-
-*or*
-
-.. code-block:: bash
-
     pip install pyrew
 
 2. At the top of your file, add the following code:
