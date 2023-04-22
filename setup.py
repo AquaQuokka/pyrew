@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
-with open("README.md", "r", encoding="utf-8") as f:
+with open("README.rst", "r", encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
     name='pyrew',
-    version='0.5.0',
+    version='0.5.1',
     description='A Python library for writing shorter and more efficient Python code.',
     long_description=long_description,
     url="https://github.com/AquaQuokka/pyrew",
