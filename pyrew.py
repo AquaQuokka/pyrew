@@ -52,11 +52,37 @@ class Pyrew:
             @staticmethod
             def read(path):
                 with open(os.path.join(os.getcwd(), path), 'r') as f:
-                    return str(f.read(f))
+                    return str(f.read())
                 
             @staticmethod
             def write(path, content):
                 with open(os.path.join(os.getcwd(), path), 'w') as f:
+                    f.write(content)
+
+        class cfd:
+
+            @staticmethod
+            def append(path, content):
+                
+                cfd = os.path.dirname(os.path.abspath(__file__))
+
+                with open(os.path.join(cfd, path), 'a') as f:
+                    f.wwrite(content)
+
+            @staticmethod
+            def read(path, content):
+                
+                cfd = os.path.dirname(os.path.abspath(__file__))
+
+                with open(os.path.join(cfd, path), 'r') as f:
+                    return str(f.read())
+                
+            @staticmethod
+            def write(path, content):
+
+                cfd = os.path.dirname(os.path.abspath(__file__))
+
+                with open(os.path.join(cfd, path), 'w') as f:
                     f.write(content)
                 
         @staticmethod
@@ -67,18 +93,20 @@ class Pyrew:
         @staticmethod
         def read(path):
             with open(path, 'r') as f:
-                return str(f.read(f))
+                return str(f.read())
             
         @staticmethod
         def write(path, content):
             with open(path, 'w') as f:
                 f.write(content)
 
+    """
     @staticmethod
     @contextmanager
     def run(n):
         for i in range(n):
-            yield i
+            yield
+    """
 
     @staticmethod
     def throw(*exceptions):
@@ -131,10 +159,14 @@ class Pyrew:
 
         @staticmethod
         def run(*cmds):
+
             for cmd in cmds:
-                confirm = input(f"You are about to do something potentially dangerous. Are you sure you want to run \"{cmd}\"? y/N: ")
+
+                confirm = input(f"You are about to do something potentially dangerous. Are you sure you want to run \"{cmd}\"? (Y/n): ")
+
                 if confirm.lower() in ["y", "yes"]:
                     os.system(cmd)
+
                 else:
                     print(f"Cancelled action \"{cmd}\"! Good call.")
 
@@ -147,7 +179,7 @@ class Pyrew:
 
                 for cmd in cmds:
 
-                    confirm = input(f"You are about to do something potentially dangerous. Are you sure you want to run \"{cmd}\"? y/N: ")
+                    confirm = input(f"You are about to do something potentially dangerous. Are you sure you want to run \"{cmd}\"? (Y/n): ")
 
                     if confirm.lower() in ["y", "yes"]:
                         os.chdir(cwd)
@@ -155,6 +187,24 @@ class Pyrew:
 
                     else:
                         print(f"Cancelled action \"{cmd}\" in \"{cwd}\"! Good call.")
+        
+        class cfd:
+
+            @staticmethod
+            def run(*cmds):
+                
+                cfd = os.path.dirname(os.path.abspath(__file__))
+
+                for cmd in cmds:
+
+                    confirm = input(f"You are about to do something potentially dangerous. Are you sure you want to run \"{cmd}\"? (Y/n): ")
+
+                    if confirm.lower() in ['y', 'yes']:
+                        os.chdir(cfd)
+                        os.system(cmd)
+
+                    else:
+                        print(f"Cancelled action \"{cmd}\" in \"{cfd}\"! Good call.")
 
     @staticmethod
     def spin(func):
@@ -210,11 +260,6 @@ class Pyrew:
                 results.append(validate_email(email))
 
             return results
-
-
-
-
-
 
 builtins.print = Pyrew().write
 
