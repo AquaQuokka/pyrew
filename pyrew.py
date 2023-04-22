@@ -4,6 +4,11 @@ import importlib
 import os
 from contextlib import contextmanager
 
+class MultiException(Exception):
+    def __init__(self, exceptions):
+        self.exceptions = exceptions
+        super().__init__(f"{len(exceptions)} exceptions occurred")
+
 class Pyrew:
     @staticmethod
     def write(*args, end='\n'):
@@ -37,7 +42,14 @@ class Pyrew:
     @contextmanager
     def run(n):
         for i in range(n):
-            yield
+            yield i
+
+    @staticmethod
+    def throw(*exceptions):
+        if len(exceptions) == 1:
+            raise exceptions[0]
+
+        raise MultiException(exceptions)
 
 builtins.print = Pyrew().write
 
@@ -47,4 +59,6 @@ builtins.__dict__['string'] = str
 builtins.__dict__['integer'] = int
 builtins.__dict__['boolean'] = bool
 builtins.__dict__['none'] = None
+builtins.__dict__['null'] = None
 builtins.__dict__['void'] = None
+
