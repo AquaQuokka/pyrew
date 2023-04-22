@@ -13,5 +13,9 @@ setup(
     license='BSD-3-Clause',
     py_modules=['pyrew'],
     scripts=['pyrew.py'],
-    install_requires=[]
+    install_requires=[
+        'nothing; extra == "rolling"',
+        'nothing; extra == "unstable"',
+        'nothing; extra == "stable"',
+    ],
 )
