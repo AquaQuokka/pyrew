@@ -132,7 +132,7 @@ class Pyrew:
         @staticmethod
         def run(*cmds):
             for cmd in cmds:
-                confirm = input(f"You are about to do something potentially dangerous. Are you sure you want to run \"{cmd}\"? y/N")
+                confirm = input(f"You are about to do something potentially dangerous. Are you sure you want to run \"{cmd}\"? y/N: ")
                 if confirm.lower() in ["y", "yes"]:
                     os.system(cmd)
                 else:

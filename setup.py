@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pyrew',
-    version='0.3.0',
+    version='0.3.1',
     description='A Python library for writing shorter and more efficient Python code.',
     url="git+https://github.com/AquaQuokka/pyrew.git",
     author="AquaQuokka",
