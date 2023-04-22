@@ -16,3 +16,4 @@ pip install git+https://github.com/AquaQuokka/pyrew.git
 import pyrew
 
 pyrew = pyrew.Pyrew()
+```
