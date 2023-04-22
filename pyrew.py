@@ -3,6 +3,7 @@ import builtins
 import importlib
 import os
 from contextlib import contextmanager
+from contextlib import AbstractContextManager
 import logging
 import asyncio
 import time
@@ -11,6 +12,8 @@ import threading
 import re
 import humanize
 import math
+import string
+import random
 
 try:
     import colorama
@@ -462,14 +465,71 @@ class Pyrew:
             b **= b
 
         return b
+    
+    @staticmethod
+    def remove_all(l: list, value):
+        return [i for i in l if i != value]
+    
+    @staticmethod
+    def occurs(l: list, value):
+        return l.count(value)
+    
+    @staticmethod
+    def randstr(length: int) -> str:
+        return ''.join(random.choices(string.ascii_letters, k=length))
+    
+    @staticmethod
+    def disk(radius: float) -> float:
+        return math.pi * (radius ** 2)
+    
+    @staticmethod
+    def euclid_distance(x1: float, y1: float, x2: float, y2: float) -> float:
+        return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    
+    @staticmethod
+    def is_leap(year: int) -> bool:
+        if year % 4 == 0:
+            if year % 100 == 0:
+                if year % 400 == 0:
+                    return True
+
+                else:
+                    return False
+                
+            else:
+                return True
+            
+        else:
+            return False
+        
+    @staticmethod
+    def area(l: float, w: float) -> float:
+        return l * w
+    
+    @staticmethod
+    def perimeter(*sides):
+        if not sides:
+            raise ValueError("perimeter() expects at least 3 arguments: \"sides\"")
+        
+        elif len(sides) < 3:
+            if len(sides) > 0:
+                if len(sides) == 1:
+                    raise ValueError("perimeter() expects at least 3 arguments: \"sides\", did you mean to use circ()?")
+                
+                else:
+                    raise ValueError("perimeter() expects at least 3 arguments: \"sides\"")
+            
+        else:
+            return sum(sides)
+        
+    @staticmethod
+    def circ(rad: float) -> float:
+        return 2 * math.pi * rad    
 
 builtins.print = Pyrew().write
 
 builtins.__dict__['true'] = True
 builtins.__dict__['false'] = False
-builtins.__dict__['string'] = str
-builtins.__dict__['integer'] = int
-builtins.__dict__['boolean'] = bool
 builtins.__dict__['none'] = None
 builtins.__dict__['null'] = None
 builtins.__dict__['void'] = None
