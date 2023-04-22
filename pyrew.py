@@ -235,7 +235,7 @@ class Pyrew:
         finally:
             stop_spinner.set()
             spinner_thread.join()
-            sys.stdout.write("\r\nDone!\n")
+            sys.stdout.write("Done!\n")
             sys.stdout.flush()
 
     class validate:
