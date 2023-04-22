@@ -2,11 +2,12 @@ from setuptools import setup, find_packages
 
 setup(
     name='pyrew',
-    version='0.2.2',
+    version='0.3.0',
     description='A Python library for writing shorter and more efficient Python code.',
-    url="https://github.com/AquaQuokka/pyrew",
+    url="git+https://github.com/AquaQuokka/pyrew.git",
     author="AquaQuokka",
     license='BSD-3-Clause',
-    packages=find_packages(),
+    py_modules=['pyrew'],
+    scripts=['pyrew.py'],
     install_requires=[]
 )
