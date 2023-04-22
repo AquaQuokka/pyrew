@@ -1,6 +1,6 @@
 # Pyrew
 
-Welcome to Pyrew (PYthon REWrite), a Python program that provides the ability to write shorter and more efficient Python code by simply downloading, installing and importing a single file.
+Welcome to Pyrew, a Python library that provides a way to write shorter and more efficient Python code.
 
 ## Installation
 
@@ -8,6 +8,12 @@ Welcome to Pyrew (PYthon REWrite), a Python program that provides the ability to
 
 ```
 pip install git+https://github.com/AquaQuokka/pyrew.git
+```
+
+*or*
+
+```
+pip install pyrew
 ```
 
 2. At the top of your file, add the following code:
