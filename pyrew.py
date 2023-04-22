@@ -9,6 +9,8 @@ import time
 import itertools
 import threading
 import re
+import humanize
+import math
 
 try:
     import colorama
@@ -300,8 +302,166 @@ class Pyrew:
             
         else:
             return int(1)
+        
+    @staticmethod
+    def format_number(*nums):
 
+        if len(nums) > 1:
+            formatted_nums = []
 
+            for num in nums:
+                formatted_nums.append(humanize.intcomma(num))
+                
+            return formatted_nums
+
+        elif len(nums) == 0:
+            raise ValueError(f"format_number() missing 1 required positional argument: \"nums\"")
+        
+        else:
+            for num in nums:
+                return humanize.intcomma(num)
+            
+    @staticmethod
+    def flatten(l: list):
+        flattened = []
+
+        for i in l:
+
+            if isinstance(i, (list, tuple)):
+                flattened.extend(i)
+
+            else:
+                flattened.append(i)
+
+        return flattened
+    
+    class average:
+
+        @staticmethod
+        def mean(nums: list):
+            return sum(nums) / len(nums)
+        
+        @staticmethod
+        def median(nums: list):
+            nums.sort()
+            n = len(nums)
+
+            if n % 2 == 0:
+                return (nums[n//2-1] + nums[n//2]) / 2
+            
+            else:
+                return nums[n//2]
+        
+        @staticmethod
+        def mode(nums: list):
+            freq_dict = {}
+
+            for n in nums:
+                freq_dict[n] = freq_dict.get(n, 0) + 1
+            
+            max_freq = max(freq_dict.values())
+            modes = [k for k, v in freq_dict.items() if v == max_freq]
+            return modes[0] if modes else None
+        
+        @staticmethod
+        def range(nums: list):
+            return max(nums) - min(nums)
+        
+    @staticmethod
+    def reverse_string(*strings):
+
+        if len(strings) == 0:
+            raise ValueError("reverse_string() missing 1 required positional argument: \"strings\"")
+        
+        elif len(strings) == 1:
+            return str(strings[0])[::-1]
+        
+        else:
+            return [str(s)[::-1] for s in strings]
+        
+    @staticmethod
+    def is_palindrome(*strings):
+
+        if len(strings) == 0:
+            raise ValueError("is_palindrome() missing 1 required positional argument: \"strings\"")
+        
+        results = []
+
+        for string in strings:
+
+            if str(string).lower() == str(string)[::-1].lower():
+
+                results.append(True)
+
+            else:
+                results.append(False)
+
+        return results if len(results) > 1 else results[0]
+    
+    @staticmethod
+    def is_prime(n: int) -> bool:
+        
+        if n <= 1:
+            return False
+        
+        for i in range(2, int(n ** 0.5) + 1):
+            if n % i == 0:
+                return False
+        
+        return True
+    
+    @staticmethod
+    def gcd(a: int, b: int) -> int:
+
+        """Returns the greatest common divisor of two integers using the Euclidean algorithm."""
+        
+        if not isinstance(a, int) or not isinstance(b, int):
+            raise TypeError("gcd() expects integers as input")
+
+        while b != 0:
+            a, b = b, a % b
+
+        return abs(a)
+    
+    @staticmethod
+    def lcm(a: int, b: int) -> int:
+
+        """Returns the least common multiple of two integers."""
+
+        return abs(a * b) // math.gcd(a, b)
+    
+    @staticmethod
+    def factorial(num: int):
+
+        if num < 0:
+            raise ValueError("factorial() not defined for negative values")
+        
+        elif num == 0:
+            return 1
+        
+        else:
+
+            result = 1
+
+            for i in range(1, num+1):
+                result *= i
+
+            return result
+    
+    @staticmethod
+    def tetrate(base: int, height: int) -> int:
+        b = base
+
+        if height == 0:
+            return 1
+        
+        if height == 1:
+            return b
+
+        for i in range(height - 1):
+            b **= b
+
+        return b
 
 builtins.print = Pyrew().write
 
