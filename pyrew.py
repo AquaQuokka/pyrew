@@ -17,8 +17,18 @@ try:
 except ImportError:
     pass
 
+class FailureReturnValueError(ValueError):
+    def __init__(self, value):
+        self.value = value
+        super().__init__(f"\"{value}\" is not a valid return value for a failure")
+
+class SuccessReturnValueError(ValueError):
+    def __init__(self, value):
+        self.value = value
+        super().__init__(f"\"{value}\" is not a valid return value for a success")
+
 class MultiException(Exception):
-    def __init__(self, exceptions):
+    def __init__(self, exceptions: int):
         self.exceptions = exceptions
         super().__init__(f"{len(exceptions)} exceptions occurred")
 
@@ -260,6 +270,38 @@ class Pyrew:
                 results.append(validate_email(email))
 
             return results
+        
+    @staticmethod
+    def success(*ids):
+
+        if ids:
+            if len(ids) != 1:
+                raise ValueError("Invalid number of return values: %d" % len(ids))
+        
+        for i in ids:
+            if i != 0:
+                raise SuccessReturnValueError(value=int(i))
+
+        else:
+            return 0
+            
+
+    
+    @staticmethod
+    def failure(*ids):
+
+        if ids:
+            for i in ids:
+                if i != 0:
+                    return int(i)
+                
+            else:
+                raise FailureReturnValueError(value=int(i))
+            
+        else:
+            return int(1)
+
+
 
 builtins.print = Pyrew().write
 
