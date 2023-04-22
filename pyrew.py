@@ -67,7 +67,7 @@ class Pyrew:
                 cfd = os.path.dirname(os.path.abspath(__file__))
 
                 with open(os.path.join(cfd, path), 'a') as f:
-                    f.wwrite(content)
+                    f.write(content)
 
             @staticmethod
             def read(path, content):
