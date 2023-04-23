@@ -2,8 +2,8 @@ import sys
 import builtins
 import importlib
 import os
-from contextlib import contextmanager
-from contextlib import AbstractContextManager
+import contextlib
+from contextlib import ContextDecorator
 import logging
 import asyncio
 import time
@@ -14,6 +14,7 @@ import humanize
 import math
 import string
 import random
+import bisect
 
 try:
     import colorama
@@ -115,14 +116,6 @@ class Pyrew:
             with open(path, 'w') as f:
                 f.write(content)
 
-    """
-    @staticmethod
-    @contextmanager
-    def run(n):
-        for i in range(n):
-            yield
-    """
-
     @staticmethod
     def throw(*exceptions):
         if len(exceptions) == 1:
@@ -177,7 +170,7 @@ class Pyrew:
 
             for cmd in cmds:
 
-                confirm = input(f"You are about to do something potentially dangerous. Are you sure you want to run \"{cmd}\"? (Y/n): ")
+                confirm = input(f"\033[0;31mYou are about to do something potentially dangerous. Are you sure you want to run \"{cmd}\"?\033[0m (Y/n): ")
 
                 if confirm.lower() in ["y", "yes"]:
                     os.system(cmd)
@@ -194,14 +187,18 @@ class Pyrew:
 
                 for cmd in cmds:
 
-                    confirm = input(f"You are about to do something potentially dangerous. Are you sure you want to run \"{cmd}\"? (Y/n): ")
+                    confirm = input(f"\033[0;31mYou are about to do something potentially dangerous. Are you sure you want to run \"{cmd}\"?\033[0m (Y/n): ")
 
-                    if confirm.lower() in ["y", "yes"]:
+                    try:
+                        if confirm.lower() in ["y", "yes"]:
+                            os.chdir(cwd)
+                            os.system(cmd)
+
+                        else:
+                            print(f"Cancelled action \"{cmd}\" in \"{cwd}\"! Good call.")
+
+                    finally:
                         os.chdir(cwd)
-                        os.system(cmd)
-
-                    else:
-                        print(f"Cancelled action \"{cmd}\" in \"{cwd}\"! Good call.")
         
         class cfd:
 
@@ -212,14 +209,18 @@ class Pyrew:
 
                 for cmd in cmds:
 
-                    confirm = input(f"You are about to do something potentially dangerous. Are you sure you want to run \"{cmd}\"? (Y/n): ")
+                    confirm = input(f"\033[0;31mYou are about to do something potentially dangerous. Are you sure you want to run \"{cmd}\"?\033[0m (Y/n): ")
 
-                    if confirm.lower() in ['y', 'yes']:
+                    try:
+                        if confirm.lower() in ['y', 'yes']:
+                            os.chdir(cfd)
+                            os.system(cmd)
+
+                        else:
+                            print(f"Cancelled action \"{cmd}\" in \"{cfd}\"! Good call.")
+                    
+                    finally:
                         os.chdir(cfd)
-                        os.system(cmd)
-
-                    else:
-                        print(f"Cancelled action \"{cmd}\" in \"{cfd}\"! Good call.")
 
     @staticmethod
     def spin(func):
@@ -525,6 +526,117 @@ class Pyrew:
     @staticmethod
     def circ(rad: float) -> float:
         return 2 * math.pi * rad    
+    
+    @contextlib.contextmanager
+    def timer(self):
+        start = (time.time() * 1000)
+        self.put(f"\033[0;32mTimer started!\033[0m")
+        yield
+        end = (time.time() * 1000)
+        self.put(f"\033[0;31mTimer ended!\033[0m")
+        elapsed = end - start
+        self.put(f"\033[0;33mExecution time (elapsed)\033[0m\033[1;34m:\033[0m \033[0;36m{round(elapsed)}\033[0m\033[0;35mms\033[0m")
+
+    @contextlib.contextmanager
+    def suppress(self):
+        try:
+            yield
+
+        except:
+            pass
+
+    class unarray:
+        def __init__(self, data):
+            self.data = data
+
+        def __getitem__(self, key):
+            return self.data[key - 1]
+
+    class cyclist:
+        def __init__(self, items):
+            self.items = items
+
+        def __getitem__(self, index):
+            if isinstance(index, slice):
+                start, stop, step = index.indices(len(self.items))
+                return [self.items[i % len(self.items)] for i in range(start, stop, step)]
+            else:
+                return self.items[index % len(self.items)]
+
+        def __len__(self):
+            return len(self.items)
+        
+        def __repr__(self):
+            return f"cyclist({self.items})"
+        
+    class buffer:
+        def __init__(self, max_size):
+            self.buffer = [None] * max_size
+            self.max_size = max_size
+            self.index = 0
+            
+        def add(self, item):
+            self.buffer[self.index] = item
+            self.index = (self.index + 1) % self.max_size
+            
+        def __getitem__(self, key):
+            return self.buffer[key % self.max_size]
+        
+        def __setitem__(self, key, value):
+            self.buffer[key % self.max_size] = value
+            
+        def __len__(self):
+            return self.max_size
+        
+    class tupleset(tuple):
+        def __new__(cls, iterable):
+
+            seen = set()
+
+            new_iterable = []
+
+            for item in iterable:
+                if item not in seen:
+                    seen.add(item)
+                    new_iterable.append(item)
+            
+            return super().__new__(cls, new_iterable)
+        
+    class order:
+        def __init__(self, ascending=True):
+            self.ascending = ascending
+            self.items = []
+
+        def add(self, item):
+            idx = bisect.bisect_left(self.items, item)
+            if self.ascending:
+                self.items.insert(idx, item)
+            else:
+                self.items.insert(idx, item)
+            
+        def remove(self, item):
+            idx = bisect.bisect_left(self.items, item)
+            if idx < len(self.items) and self.items[idx] == item:
+                self.items.pop(idx)
+
+        def __getitem__(self, idx):
+            return self.items[idx]
+
+        def __len__(self):
+            return len(self.items)
+
+        def __repr__(self):
+            return repr(self.items)
+    
+    @contextlib.contextmanager
+    def shield(self):
+        confirm = input("\033[0;31mYou are about to do something potentially dangerous. Continue anyways?\033[0m (Y/n): ")
+
+        if confirm.lower() in ["y", "yes"]:
+            yield
+
+        else:
+            print("Cancelled action! Good call.")
 
 builtins.print = Pyrew().put
 
