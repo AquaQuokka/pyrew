@@ -39,7 +39,7 @@ class MultiException(Exception):
 
 class Pyrew:
     @staticmethod
-    def write(*args, end='\n'):
+    def put(*args, end='\n'):
 
         args_list = list(args)
 
@@ -526,7 +526,7 @@ class Pyrew:
     def circ(rad: float) -> float:
         return 2 * math.pi * rad    
 
-builtins.print = Pyrew().write
+builtins.print = Pyrew().put
 
 builtins.__dict__['true'] = True
 builtins.__dict__['false'] = False
