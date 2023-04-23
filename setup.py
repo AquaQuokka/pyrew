@@ -5,7 +5,7 @@ with open("README.rst", "r", encoding="utf-8") as f:
 
 setup(
     name='pyrew',
-    version='0.12.0',
+    version='0.12.1',
     description='A Python library for writing shorter and more efficient Python code.',
     long_description=long_description,
     url="https://github.com/AquaQuokka/pyrew",
