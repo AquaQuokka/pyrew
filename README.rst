@@ -7,8 +7,8 @@ Welcome to Pyrew, a Python library that provides a way to write shorter and more
 Installation
 ------------
 
-Stable:
-****
+Stable
+------------
 
 1. Run the following command:
 
@@ -25,8 +25,8 @@ Stable:
     pyrew = pyrew.Pyrew()
     
 
-Development:
-****
+Development
+------------
 
 1. Run the following command:
 
