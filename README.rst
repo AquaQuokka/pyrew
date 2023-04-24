@@ -24,7 +24,6 @@ Stable:
 
     pyrew = pyrew.Pyrew()
     
-****
 
 Development:
 ****
