@@ -638,6 +638,41 @@ class Pyrew:
         else:
             print("Cancelled action! Good call.")
 
+    @staticmethod
+    def add(base, *args) -> float:
+
+        for arg in args:
+            base += arg
+
+        return base
+    
+    @staticmethod
+    def subtract(base, *args) -> float:
+
+        for arg in args:
+            base -= arg
+
+        return base
+    
+    @staticmethod
+    def multiply(base, *args) -> float:
+
+        for arg in args:
+            base *= arg
+
+        return base
+    
+    @staticmethod
+    def divide(base, *args) -> float:
+
+        for arg in args:
+            base /= arg
+
+        return base
+
+    
+
+
 builtins.print = Pyrew().put
 
 builtins.__dict__['true'] = True
