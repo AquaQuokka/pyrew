@@ -3,7 +3,6 @@ import builtins
 import importlib
 import os
 import contextlib
-from contextlib import ContextDecorator
 import logging
 import asyncio
 import time
@@ -227,7 +226,7 @@ class Pyrew:
         
         spinner = itertools.cycle(
                 [
-                    f"\033[31m\u2015\033[0m",
+                    f"\033[31m-\033[0m",
                     f"\033[32m/\033[0m", 
                     f"\033[33m|\033[0m", 
                     f"\033[34m\\\033[0m"
