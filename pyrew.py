@@ -14,6 +14,8 @@ import math
 import string
 import random
 import bisect
+import subprocess
+import pip
 
 try:
     import colorama
@@ -38,6 +40,12 @@ class MultiException(Exception):
         super().__init__(f"{len(exceptions)} exceptions occurred")
 
 class Pyrew:
+
+    def __init__(self):
+        import __main__
+        if hasattr(__main__, 'main'):
+            __main__.main()
+
     @staticmethod
     def put(*args, end='\n'):
 
@@ -341,11 +349,11 @@ class Pyrew:
     class average:
 
         @staticmethod
-        def mean(nums: list):
+        def getmean(nums: list):
             return sum(nums) / len(nums)
         
         @staticmethod
-        def median(nums: list):
+        def getmedian(nums: list):
             nums.sort()
             n = len(nums)
 
@@ -356,7 +364,7 @@ class Pyrew:
                 return nums[n//2]
         
         @staticmethod
-        def mode(nums: list):
+        def getmode(nums: list):
             freq_dict = {}
 
             for n in nums:
@@ -367,7 +375,7 @@ class Pyrew:
             return modes[0] if modes else None
         
         @staticmethod
-        def range(nums: list):
+        def getrange(nums: list):
             return max(nums) - min(nums)
         
     @staticmethod
@@ -575,8 +583,12 @@ class Pyrew:
             self.index = 0
             
         def add(self, item):
-            self.buffer[self.index] = item
-            self.index = (self.index + 1) % self.max_size
+            if self.index == self.max_size:
+                self.buffer[:-1] = self.buffer[1:]
+                self.buffer[-1] = item
+            else:
+                self.buffer[self.index] = item
+                self.index += 1
             
         def __getitem__(self, key):
             return self.buffer[key % self.max_size]
@@ -586,6 +598,7 @@ class Pyrew:
             
         def __len__(self):
             return self.max_size
+
         
     class tupleset(tuple):
         def __new__(cls, iterable):
@@ -677,6 +690,7 @@ class Pyrew:
         else:
             return abs(a - b) <= tolerance
 
+
 builtins.print = Pyrew().put
 
 builtins.__dict__['true'] = True
@@ -684,4 +698,3 @@ builtins.__dict__['false'] = False
 builtins.__dict__['none'] = None
 builtins.__dict__['null'] = None
 builtins.__dict__['void'] = None
-
