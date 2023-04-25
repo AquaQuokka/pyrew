@@ -669,8 +669,13 @@ class Pyrew:
 
         return base
 
-    
-
+    @staticmethod
+    def diff(a, b, tolerance=None) -> bool:
+        if tolerance is None:
+            raise ValueError("tolerance must be specified")
+        
+        else:
+            return abs(a - b) <= tolerance
 
 builtins.print = Pyrew().put
 
