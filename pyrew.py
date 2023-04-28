@@ -43,9 +43,7 @@ class MultiException(Exception):
 class Pyrew:
 
     def __init__(self):
-        import __main__
-        if hasattr(__main__, 'main'):
-            __main__.main()
+        pass
 
     @staticmethod
     def put(*args, end='\n'):
