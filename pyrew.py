@@ -40,6 +40,17 @@ class MultiException(Exception):
         self.exceptions = exceptions
         super().__init__(f"{len(exceptions)} exceptions occurred")
 
+class OutputStream:
+    def __init__(self, new_stream):
+        self.new_stream = new_stream
+        self.old_stream = sys.stdout
+
+    def __enter__(self):
+        sys.stdout = self.new_stream
+
+    def __exit__(self, exc_type, exc_value, trace):
+        sys.stdout = self.old_stream
+
 class Pyrew:
 
     def __init__(self):
@@ -229,9 +240,9 @@ class Pyrew:
                         os.chdir(cfd)
 
     @staticmethod
-    def spin(func):
+    def spinner(func):
         
-        spinner = itertools.cycle(
+        frames = itertools.cycle(
                 [
                     f"\033[31m-\033[0m",
                     f"\033[32m/\033[0m", 
@@ -244,7 +255,7 @@ class Pyrew:
 
         def animate():
             while not stop_spinner.is_set():
-                sys.stdout.write("\rRunning... " + next(spinner))
+                sys.stdout.write("\rRunning... " + next(frames))
                 sys.stdout.flush()
                 time.sleep(0.1)
         
@@ -457,7 +468,7 @@ class Pyrew:
             return result
     
     @staticmethod
-    def tetrate(base: int, height: int) -> int:
+    def tetrate(base: float, height: int) -> float:
         b = base
 
         if height == 0:
@@ -465,6 +476,15 @@ class Pyrew:
         
         if height == 1:
             return b
+        
+        if base == 0:
+            return 0
+        
+        if base == 1:
+            return 1
+        
+        if base < 0 and height % 2 == 0:
+            raise ValueError("Cannot tetrate a negative base to an even height")
 
         for i in range(height - 1):
             b **= b
@@ -734,11 +754,47 @@ class Pyrew:
             with open(self.path, 'r') as nf:
                 jsonf = json.load(nf)
                 return jsonf[name]
+            
+    class Python:
+
+        """DANGER! Make sure that you know what you are doing when you use these functions!"""
+
+        @staticmethod
+        def defattr(name: any, value: any):
+            setattr(builtins, name, value)
+
+        @staticmethod
+        def redict(name: any, value: any):
+            builtins.__dict__[name] = value
+
+        @staticmethod
+        def globalmod(name: any, value: any):
+            globals()[name] = value
+
+        @staticmethod
+        def cdout(stream):
+            return OutputStream(stream)
+
+    class Double(float):
+        def __new__(cls, value):
+            if isinstance(value, str):
+                value = float(value)
+
+            if isinstance(value, float):
+                value = round(value, 2)
+                
+            return super().__new__(cls, value)
+
+        def __str__(self):
+            return '{:.2f}'.format(self)
+
+        def __repr__(self):
+            return 'Double({:.2f})'.format(self)
 
 builtins.print = Pyrew().put
 
-builtins.__dict__['true'] = True
-builtins.__dict__['false'] = False
-builtins.__dict__['none'] = None
-builtins.__dict__['null'] = None
-builtins.__dict__['void'] = None
+setattr(builtins, "true", True)
+setattr(builtins, "false", False)
+setattr(builtins, "none", None)
+setattr(builtins, "null", None)
+setattr(builtins, "void", None)
