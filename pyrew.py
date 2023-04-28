@@ -16,6 +16,8 @@ import random
 import bisect
 import subprocess
 import pip
+import configparser
+import json
 
 try:
     import colorama
@@ -23,7 +25,6 @@ try:
 
 except ImportError:
     pass
-
 class FailureReturnValueError(ValueError):
     def __init__(self, value):
         self.value = value
@@ -297,9 +298,7 @@ class Pyrew:
 
         else:
             return 0
-            
 
-    
     @staticmethod
     def failure(*ids):
 
@@ -346,7 +345,7 @@ class Pyrew:
 
         return flattened
     
-    class average:
+    class averages:
 
         @staticmethod
         def getmean(nums: list):
@@ -379,7 +378,7 @@ class Pyrew:
             return max(nums) - min(nums)
         
     @staticmethod
-    def reverse_string(*strings):
+    def reversestr(*strings):
 
         if len(strings) == 0:
             raise ValueError("reverse_string() missing 1 required positional argument: \"strings\"")
@@ -391,7 +390,7 @@ class Pyrew:
             return [str(s)[::-1] for s in strings]
         
     @staticmethod
-    def is_palindrome(*strings):
+    def ispalindrome(*strings):
 
         if len(strings) == 0:
             raise ValueError("is_palindrome() missing 1 required positional argument: \"strings\"")
@@ -410,7 +409,7 @@ class Pyrew:
         return results if len(results) > 1 else results[0]
     
     @staticmethod
-    def is_prime(n: int) -> bool:
+    def isprime(n: int) -> bool:
         
         if n <= 1:
             return False
@@ -475,7 +474,7 @@ class Pyrew:
         return b
     
     @staticmethod
-    def remove_all(l: list, value):
+    def rmall(l: list, value):
         return [i for i in l if i != value]
     
     @staticmethod
@@ -491,11 +490,11 @@ class Pyrew:
         return math.pi * (radius ** 2)
     
     @staticmethod
-    def euclid_distance(x1: float, y1: float, x2: float, y2: float) -> float:
+    def euclid_dist(x1: float, y1: float, x2: float, y2: float) -> float:
         return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
     
     @staticmethod
-    def is_leap(year: int) -> bool:
+    def isleap(year: int) -> bool:
         if year % 4 == 0:
             if year % 100 == 0:
                 if year % 400 == 0:
@@ -552,14 +551,14 @@ class Pyrew:
         except:
             pass
 
-    class unarray:
+    class Unarray:
         def __init__(self, data):
             self.data = data
 
         def __getitem__(self, key):
             return self.data[key - 1]
 
-    class cyclist:
+    class Cyclist:
         def __init__(self, items):
             self.items = items
 
@@ -576,7 +575,7 @@ class Pyrew:
         def __repr__(self):
             return f"cyclist({self.items})"
         
-    class buffer:
+    class Buffer:
         def __init__(self, max_size):
             self.buffer = [None] * max_size
             self.max_size = max_size
@@ -600,7 +599,8 @@ class Pyrew:
             return self.max_size
 
         
-    class tupleset(tuple):
+    """
+    class Tupleset(tuple):
         def __new__(cls, iterable):
 
             seen = set()
@@ -613,8 +613,9 @@ class Pyrew:
                     new_iterable.append(item)
             
             return super().__new__(cls, new_iterable)
+    """
         
-    class order:
+    class Order:
         def __init__(self, ascending=True):
             self.ascending = ascending
             self.items = []
@@ -641,7 +642,7 @@ class Pyrew:
             return repr(self.items)
     
     @contextlib.contextmanager
-    def shield(self):
+    def safeguard(self):
         confirm = input("\033[0;31mYou are about to do something potentially dangerous. Continue anyways?\033[0m (Y/n): ")
 
         if confirm.lower() in ["y", "yes"]:
@@ -681,15 +682,60 @@ class Pyrew:
             base /= arg
 
         return base
-
+        
     @staticmethod
-    def diff(a, b, tolerance=None) -> bool:
+    def getdiff(a, b) -> float:
+        if not a and not b:
+            raise ValueError("diff() expects 2 arguments: \"a\", \"b\"")
+
+        elif not b:
+            if a:
+                raise ValueError("diff() expects 2 arguments and got 1: \"a\"")
+            
+        elif not a:
+            if b:
+                raise ValueError("diff() expects 2 arguments and got 1: \"b\"")
+        
+        else:
+            if a > b:
+                return float(a - b)
+            
+            elif b > a:
+                return float(b - a)
+
+            else:
+                return float(0)
+            
+    @staticmethod
+    def isdiff(a, b, tolerance=None) -> bool:
         if tolerance is None:
             raise ValueError("tolerance must be specified")
         
         else:
             return abs(a - b) <= tolerance
 
+    class Config:
+
+        def __init__(self, path: str):
+            self.path = path
+
+            self.cfgf = configparser.ConfigParser()
+
+            with open(self.path, 'r') as cf:
+                self.cfgf.read_file(cf)
+        
+        def fetch(self, sect, name):
+            return self.cfgf[sect][name]
+
+    class Json:
+
+        def __init__(self, path: str):
+            self.path = path
+
+        def fetch(self, name):
+            with open(self.path, 'r') as nf:
+                jsonf = json.load(nf)
+                return jsonf[name]
 
 builtins.print = Pyrew().put
 
