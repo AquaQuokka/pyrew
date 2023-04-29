@@ -18,6 +18,11 @@ import subprocess
 import pip
 import configparser
 import json
+import datetime
+import time
+import smtplib
+import functools
+import typing
 
 try:
     import colorama
@@ -25,6 +30,7 @@ try:
 
 except ImportError:
     pass
+
 class FailureReturnValueError(ValueError):
     def __init__(self, value):
         self.value = value
@@ -39,6 +45,12 @@ class MultiException(Exception):
     def __init__(self, exceptions: int):
         self.exceptions = exceptions
         super().__init__(f"{len(exceptions)} exceptions occurred")
+
+class InvalidEmailError(ValueError):
+    def __init__(self, email: str):
+        self.email = email
+        self.regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        super().__init__(f"\"{email}\" is not a valid email address, it must follow the regex {self.regex}")
 
 class OutputStream:
     def __init__(self, new_stream):
@@ -275,8 +287,12 @@ class Pyrew:
 
         @staticmethod
         def email(*emails):
-
+            
+            """
             email_re = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
+            """
+
+            email_re = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 
             results = []
 
@@ -790,6 +806,91 @@ class Pyrew:
 
         def __repr__(self):
             return 'Double({:.2f})'.format(self)
+        
+    @staticmethod
+    def unix_timestamp():
+        return int(time.time())
+
+    @staticmethod
+    def email(username: str, password: str, subject: str, body: str, recipient: str, host: str, port: int=587):
+
+        def validate_email(email):
+
+            email_re = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+
+            if re.match(email_re, email):
+                return True
+            
+            else:
+                return False
+    
+        if validate_email(username):
+
+            if validate_email(recipient):
+
+                message = f"Subject: {subject}\n\n{body}"
+
+                server = smtplib.SMTP(host, port)
+                server.ehlo()
+                server.starttls()
+                server.ehlo()
+                server.login(username, password)
+                server.sendmail(username, recipient, message)
+                server.quit()
+
+            else:
+                raise InvalidEmailError(recipient)
+
+        else:
+            raise InvalidEmailError(username)
+        
+    class pi:
+
+        def acc(accuracy: int=1000000) -> float:
+            pi = 0
+            n = 4
+            d = 1
+            
+            for i in range(1, accuracy):
+                a = 2 * (i % 2) - 1
+                pi += a * n / d
+                d += 2
+            
+            return pi
+        
+        def leibniz(accuracy: int=1000000) -> float:
+            return 4 * sum(pow(-1, k) / (2*k + 1) for k in range(accuracy))
+        
+        def fmt(dec: int=5) -> str:
+            return '{:.{}f}'.format(math.pi, dec)
+        
+        def carlo(samples: int=1000000) -> float:
+            inside = 0
+            for _ in range(samples):
+                x = random.random()
+                y = random.random()
+                if x*x + y*y <= 1:
+                    inside += 1
+            return 4 * inside / samples
+        
+        class spigot:
+
+            def wagon(dec: int=14) -> str:
+                result = []
+                q, r, t, k, n, l = 1, 0, 1, 1, 3, 3
+                while dec >= 0:
+                    if 4*q+r-t < n*t:
+                        result.append(n)
+                        dec -= 1
+                        q, r, t, k, n, l = 10*q, 10*(r-n*t), t, k, (10*(3*q+r))//t-10*n, l
+
+                    else:
+                        q, r, t, k, n, l = q*k, (2*q+r)*l, t*l, k+1, (q*(7*k+2)+r*l)//(t*l), l+2
+
+                prep = '{:.0f}.{}'.format(3, ''.join(map(str, result)))
+                torem = 2
+                prep = prep[:torem] + prep[torem+1:]
+                return prep
 
 builtins.print = Pyrew().put
 
