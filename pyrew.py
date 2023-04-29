@@ -24,6 +24,7 @@ import smtplib
 import functools
 import typing
 import tkinter as tk
+from PIL import Image
 
 try:
     import colorama
@@ -898,10 +899,46 @@ class Pyrew:
             def __init__(self, **kwargs):
                 self.root = tk.Tk()
                 self.root.title("Pyrew.ui.App")
+
                 for key, value in kwargs.items():
                     setattr(self, key, value)
 
-        class Text:
+                self.frame = tk.Frame(self.root)
+
+            def __call__(self, **kwargs):
+                self.frame.mainloop()
+
+            def title(self, title):
+                self.root.title(title)
+
+            def icon(self, icon):
+                path = os.path.join(os.path.abspath(os.path.dirname(__file__)), icon)
+                
+                if not path.endswith(".ico"):
+                    img = Image.open(path)
+
+                    img.save(f"{path}.ico")
+
+                    path = os.path.join(os.path.abspath(os.path.dirname(__file__)), f"{path}.ico")
+
+                self.root.iconbitmap(path)
+
+        class Frame:
+            def __init__(self, master, **kwargs):
+                self.kwargs = kwargs
+                self.widget = tk.Frame(**kwargs)
+                self.widget.pack()
+
+            def add(self, item):
+                item.pack()
+
+            def pack(self):
+                self.widget.pack(**self.kwargs)
+            
+            def __call__(self):
+                self.widget.mainloop()
+
+        class TextBox:
             def __init__(self, master, **kwargs):
                 self.kwargs = kwargs
                 self.widget = tk.Text(**kwargs)
@@ -919,6 +956,66 @@ class Pyrew:
             def config(self, **kwargs):
                 for key, value in kwargs.items():
                     self.widget.configure({key: value})
+
+        class Text:
+            def __init__(self, master, **kwargs):
+                self.kwargs = kwargs
+                self.widget = tk.Label(**kwargs)
+                self.widget.pack()
+
+            def pack(self):
+                self.widget = tk.Label(**self.kwargs)
+            
+            def __call__(self):
+                self.widget.mainloop()
+
+            def content(self, text):
+                self.widget.configure(text=text)
+            
+            def config(self, **kwargs):
+                for key, value in kwargs.items():
+                    self.widget.configure({key: value})
+
+        class Menu:
+            def __init__(self, master, **kwargs):
+                self.kwargs = kwargs
+                self.widget = tk.Menu(**kwargs)
+                self.widget.pack()
+            
+            def pack(self):
+                self.widget = tk.Menu(**self.kwargs)
+
+            def __call__(self):
+                self.widget.mainloop()
+
+            def add_submenu(self, label, menu):
+                self.widget.add_cascade(label=label, menu=menu)
+
+            def config(self, **kwargs):
+                for key, value in kwargs.items():
+                    self.widget.configure({key: value})
+
+        class Button:
+            def __init__(self, master, **kwargs):
+                self.kwargs = kwargs
+                self.widget = tk.Button(**kwargs)
+                self.widget.pack()
+            
+            def pack(self):
+                self.widget = tk.Button(**self.kwargs)
+            
+            def __call__(self):
+                self.widget.mainloop()
+
+            def content(self, text):
+                self.widget.configure(text=text)
+
+            def configure(self, **kwargs):
+                for key, value in kwargs.items():
+                    self.widget.configure({key: value})
+            
+            def bind(self, event, handler):
+                self.widget.bind(event, handler)
                 
         def mainloop(self):
             self.root.mainloop()
