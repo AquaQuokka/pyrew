@@ -23,6 +23,7 @@ import time
 import smtplib
 import functools
 import typing
+import tkinter as tk
 
 try:
     import colorama
@@ -891,6 +892,31 @@ class Pyrew:
                 torem = 2
                 prep = prep[:torem] + prep[torem+1:]
                 return prep
+    
+    class ui:
+        class App:
+            def __init__(self, **kwargs):
+                self.root = tk.Tk()
+                for key, value in kwargs.items():
+                    setattr(self, key, value)
+
+        class Text:
+            def __init__(self, master, **kwargs):
+                self.kwargs = kwargs
+                self.widget = tk.Text(**kwargs)
+                self.widget.pack()
+
+            def lock(self):
+                self.widget = tk.Text(**self.kwargs)
+
+            def __call__(self):
+                self.widget.mainloop()
+
+            def content(self, text):
+                self.widget.insert(tk.END, text)
+                
+        def mainloop(self):
+            self.root.mainloop()
 
 builtins.print = Pyrew().put
 
