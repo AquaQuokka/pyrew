@@ -897,6 +897,7 @@ class Pyrew:
         class App:
             def __init__(self, **kwargs):
                 self.root = tk.Tk()
+                self.root.title("Pyrew.ui.App")
                 for key, value in kwargs.items():
                     setattr(self, key, value)
 
@@ -906,7 +907,7 @@ class Pyrew:
                 self.widget = tk.Text(**kwargs)
                 self.widget.pack()
 
-            def lock(self):
+            def pack(self):
                 self.widget = tk.Text(**self.kwargs)
 
             def __call__(self):
@@ -914,6 +915,10 @@ class Pyrew:
 
             def content(self, text):
                 self.widget.insert(tk.END, text)
+
+            def config(self, **kwargs):
+                for key, value in kwargs.items():
+                    self.widget.configure({key: value})
                 
         def mainloop(self):
             self.root.mainloop()
