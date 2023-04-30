@@ -928,7 +928,7 @@ class Pyrew:
         class App:
             def __init__(self, **kwargs):
                 self.root = tk.Tk()
-                self.root.title("Pyrew.ui.App")
+                self.root.title("pyrew")
 
                 for key, value in kwargs.items():
                     setattr(self, key, value)
