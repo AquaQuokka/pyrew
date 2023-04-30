@@ -27,6 +27,7 @@ import tkinter as tk
 import http.server
 import socketserver
 import webbrowser
+from tkhtmlview import HTMLLabel, RenderHTML
 from PIL import Image
 
 try:
@@ -932,6 +933,7 @@ class Pyrew:
             def __init__(self, **kwargs):
                 self.root = tk.Tk()
                 self.root.title("pyrew")
+                self.size()
 
                 for key, value in kwargs.items():
                     setattr(self, key, value)
@@ -955,6 +957,9 @@ class Pyrew:
                     path = os.path.join(os.path.abspath(os.path.dirname(__file__)), f"{path}.ico")
 
                 self.root.iconbitmap(path)
+
+            def size(self, width=200, height=200):
+                self.root.geometry(f"{width}x{height}")
 
         class Frame:
             def __init__(self, master, **kwargs):
