@@ -896,12 +896,16 @@ class Pyrew:
                 torem = 2
                 prep = prep[:torem] + prep[torem+1:]
                 return prep
+    
+    @staticmethod
+    def hyperlink(url, text):
+        return f"\033]8;;{url}\033\\{text}\033]8;;\033\\"
             
-    class WebServer:
+    class Server:
         def __init__(self, path):
             self.path = path
         
-        def run(self, port=8080):
+        def run(self, host="localhost", port=random.randint(4000, 7000)):
             with open(self.path, 'r') as f:
                 self.html = f.read()
 
@@ -910,11 +914,10 @@ class Pyrew:
 
             handler = http.server.SimpleHTTPRequestHandler
             
-            with socketserver.TCPServer(("localhost", port), handler) as tcs:
+            with socketserver.TCPServer((host, port), handler) as tcs:
                 host, port = tcs.server_address
-                print(f"Serving on http://{host}:{port}")
 
-                webbrowser.open(f"http://{host}:{port}/temp.html")
+                print(f"Serving on {Pyrew.hyperlink(f'http://{host}:{port}/temp.html', f'http://{host}:{port}/')}")
 
                 try:
                     tcs.serve_forever()
@@ -933,10 +936,10 @@ class Pyrew:
                 for key, value in kwargs.items():
                     setattr(self, key, value)
 
-                self.frame = Pyrew.ui.Frame(master=self.root)
+                self.manifest = Pyrew.ui.Frame(master=self.root)
 
             def __call__(self, **kwargs):
-                self.frame.mainloop()
+                self.manifest.mainloop()
 
             def title(self, title):
                 self.root.title(title)
