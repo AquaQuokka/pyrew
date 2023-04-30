@@ -37,6 +37,9 @@ try:
 except ImportError:
     pass
 
+
+__version__ = "0.16.8"
+
 class FailureReturnValueError(ValueError):
     def __init__(self, value):
         self.value = value
