@@ -24,6 +24,9 @@ import smtplib
 import functools
 import typing
 import tkinter as tk
+import http.server
+import socketserver
+import webbrowser
 from PIL import Image
 
 try:
@@ -893,6 +896,33 @@ class Pyrew:
                 torem = 2
                 prep = prep[:torem] + prep[torem+1:]
                 return prep
+            
+    class WebServer:
+        def __init__(self, path):
+            self.path = path
+        
+        def run(self):
+            with open(self.path, 'r') as f:
+                self.html = f.read()
+
+            with open("temp.html", "w") as f:
+                f.write(self.html)
+
+            handler = http.server.SimpleHTTPRequestHandler
+            
+            with socketserver.TCPServer(("", 0), handler) as tcs:
+                host, port = tcs.server_address
+                print(f"Serving on http://{host}:{port}")
+
+                webbrowser.open(f"http://{host}:{port}/temp.html")
+
+                try:
+                    tcs.server_forever()
+                
+                except KeyboardInterrupt:
+                    pass
+
+            os.remove("temp.html")
     
     class ui:
         class App:
@@ -903,7 +933,7 @@ class Pyrew:
                 for key, value in kwargs.items():
                     setattr(self, key, value)
 
-                self.frame = tk.Frame(self.root)
+                self.frame = Pyrew.ui.Frame(master=self.root)
 
             def __call__(self, **kwargs):
                 self.frame.mainloop()
@@ -929,8 +959,9 @@ class Pyrew:
                 self.widget = tk.Frame(**kwargs)
                 self.widget.pack()
 
-            def add(self, item):
-                item.pack()
+            def child(self, *items):
+                for item in items:
+                    item.pack()
 
             def pack(self):
                 self.widget.pack(**self.kwargs)
@@ -988,7 +1019,7 @@ class Pyrew:
             def __call__(self):
                 self.widget.mainloop()
 
-            def add_submenu(self, label, menu):
+            def child(self, label, menu):
                 self.widget.add_cascade(label=label, menu=menu)
 
             def config(self, **kwargs):
