@@ -7,3 +7,5 @@ test.py
 build/
 .coverage
 .pytest_cache/
+*.html
+*.htm

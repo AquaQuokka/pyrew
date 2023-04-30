@@ -901,7 +901,7 @@ class Pyrew:
         def __init__(self, path):
             self.path = path
         
-        def run(self):
+        def run(self, port=8080):
             with open(self.path, 'r') as f:
                 self.html = f.read()
 
@@ -910,14 +910,14 @@ class Pyrew:
 
             handler = http.server.SimpleHTTPRequestHandler
             
-            with socketserver.TCPServer(("", 0), handler) as tcs:
+            with socketserver.TCPServer(("localhost", port), handler) as tcs:
                 host, port = tcs.server_address
                 print(f"Serving on http://{host}:{port}")
 
                 webbrowser.open(f"http://{host}:{port}/temp.html")
 
                 try:
-                    tcs.server_forever()
+                    tcs.serve_forever()
                 
                 except KeyboardInterrupt:
                     pass
