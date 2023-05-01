@@ -42,27 +42,38 @@ __version__ = "0.16.8"
 
 class FailureReturnValueError(ValueError):
     def __init__(self, value):
+        
         self.value = value
+
         super().__init__(f"\"{value}\" is not a valid return value for a failure")
 
 class SuccessReturnValueError(ValueError):
     def __init__(self, value):
+
         self.value = value
+
         super().__init__(f"\"{value}\" is not a valid return value for a success")
 
 class MultiException(Exception):
     def __init__(self, exceptions: int):
+
         self.exceptions = exceptions
+
         super().__init__(f"{len(exceptions)} exceptions occurred")
 
 class InvalidEmailError(ValueError):
+
     def __init__(self, email: str):
+
         self.email = email
         self.regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+
         super().__init__(f"\"{email}\" is not a valid email address, it must follow the regex {self.regex}")
 
 class OutputStream:
+
     def __init__(self, new_stream):
+
         self.new_stream = new_stream
         self.old_stream = sys.stdout
 
@@ -88,6 +99,7 @@ class Pyrew:
 
         if end is None:
             __end__ = ''
+
         else:
             __end__ = end
         
@@ -905,7 +917,7 @@ class Pyrew:
     def hyperlink(url, text):
         return f"\033]8;;{url}\033\\{text}\033]8;;\033\\"
             
-    class Server:
+    class HTMLView:
         def __init__(self, path):
             self.path = path
         
@@ -941,10 +953,10 @@ class Pyrew:
                 for key, value in kwargs.items():
                     setattr(self, key, value)
 
-                self.manifest = Pyrew.ui.Frame(master=self.root)
+                self.tree = Pyrew.ui.Frame(master=self.root)
 
             def __call__(self, **kwargs):
-                self.manifest.mainloop()
+                self.tree.mainloop()
 
             def title(self, title):
                 self.root.title(title)
@@ -1038,13 +1050,14 @@ class Pyrew:
                     self.widget.configure({key: value})
 
         class Button:
-            def __init__(self, master, **kwargs):
+            def __init__(self, master, onclick=None, **kwargs):
                 self.kwargs = kwargs
-                self.widget = tk.Button(**kwargs)
+                self.onclick = onclick
+                self.widget = tk.Button(command=onclick, **kwargs)
                 self.widget.pack()
             
             def pack(self):
-                self.widget = tk.Button(**self.kwargs)
+                self.widget = tk.Button(command=self.onclick, **self.kwargs)
             
             def __call__(self):
                 self.widget.mainloop()

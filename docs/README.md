@@ -38,10 +38,10 @@ class MyApp(pyrew.ui.App):
 
 
         # Add the label and text box to the window's main frame
-        self.manifest.child(self.text, self.tb)
+        self.tree.child(self.text, self.tb)
 
         # Call the frame's constructor method to initalize the UI's mainloop
-        self.manifest()
+        self.tree()
 
 # Call the app's constructor method to initialize and run the application
 MyApp()
