@@ -918,30 +918,43 @@ class Pyrew:
         return f"\033]8;;{url}\033\\{text}\033]8;;\033\\"
             
     class HTMLView:
-        def __init__(self, path):
-            self.path = path
+        def __init__(self, _path=None):
+            self._path = _path
+
+        def path(self, _path):
+            self._path = _path
         
         def run(self, host="localhost", port=random.randint(4000, 7000)):
-            with open(self.path, 'r') as f:
-                self.html = f.read()
+            try:
+                with open(self._path, 'r') as f:
+                    self.html = f.read()
 
-            with open("temp.html", "w") as f:
-                f.write(self.html)
+            except FileNotFoundError as e:
+                print(f"\033[31mFileNotFoundError: Could not open file \"{self._path}\" because it does not exist\033[0m")
 
-            handler = http.server.SimpleHTTPRequestHandler
+            try:
+                with open("temp.html", "w") as f:
+                    f.write(self.html)
+                    
+                handler = http.server.SimpleHTTPRequestHandler
             
-            with socketserver.TCPServer((host, port), handler) as tcs:
-                host, port = tcs.server_address
+                with socketserver.TCPServer((host, port), handler) as tcs:
+                    host, port = tcs.server_address
 
-                print(f"Serving on {Pyrew.hyperlink(f'http://{host}:{port}/temp.html', f'http://{host}:{port}/')}")
+                    print(f"Serving on {Pyrew.hyperlink(f'http://{host}:{port}/temp.html', f'http://{host}:{port}/')}")
 
-                try:
-                    tcs.serve_forever()
-                
-                except KeyboardInterrupt:
-                    pass
+                    try:
+                        tcs.serve_forever()
+                    
+                    except KeyboardInterrupt:
+                        pass
 
-            os.remove("temp.html")
+                os.remove("temp.html")    
+            
+            except AttributeError as e:
+                print(f"\033[31mAttributeError: HTMLView class has no attribute \"" + "{self.html}" + "\"\033[0m")
+
+            
     
     class ui:
         class App:
