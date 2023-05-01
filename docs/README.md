@@ -40,8 +40,8 @@ class MyApp(pyrew.ui.App):
         self.btn = pyrew.ui.Button(master=self.root, onclick=self.btnclick)
         self.tx2 = pyrew.ui.Text(master=self.root)
 
-        # Add the label and text box to the window's main frame
-        self.tree.child(self.text, self.tb, self.btn, self.tx2)
+        # Add the label, button, and text box to the window's main frame
+        self.tree.child(self.text, self.tb, self.btn)
 
         # Call the frame's constructor method to initalize the UI's mainloop
         self.tree()
