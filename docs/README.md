@@ -36,12 +36,18 @@ class MyApp(pyrew.ui.App):
         # Disable the text box using Pyrew UI's .widget variable to access the underlying Tkinter widget
         self.tb.widget.configure(state="disabled")
 
+        # Make a button that when clicked, changse the content of a new label
+        self.btn = pyrew.ui.Button(master=self.root, onclick=self.btnclick)
+        self.tx2 = pyrew.ui.Text(master=self.root)
 
         # Add the label and text box to the window's main frame
-        self.tree.child(self.text, self.tb)
+        self.tree.child(self.text, self.tb, self.btn, self.tx2)
 
         # Call the frame's constructor method to initalize the UI's mainloop
         self.tree()
+    
+    def btnclick(self):
+        self.tx2.content("You clicked the button!")
 
 # Call the app's constructor method to initialize and run the application
 MyApp()

@@ -1068,9 +1068,6 @@ class Pyrew:
             def configure(self, **kwargs):
                 for key, value in kwargs.items():
                     self.widget.configure({key: value})
-            
-            def bind(self, event, handler):
-                self.widget.bind(event, handler)
                 
         def mainloop(self):
             self.root.mainloop()
