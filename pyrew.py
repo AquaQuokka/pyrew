@@ -28,6 +28,8 @@ import http.server
 import socketserver
 from typing import Type
 import webbrowser
+import inspect
+import platform
 from tkhtmlview import HTMLLabel, RenderHTML
 from PIL import Image
 
@@ -39,7 +41,27 @@ except ImportError:
     pass
 
 
-__version__ = "0.16.9"
+__version__ = "0.16.10"
+
+
+def sizeof(obj):
+    size = sys.getsizeof(obj)
+    if isinstance(obj, dict): return size + sum(map(sizeof, obj.keys())) + sum(map(sizeof, obj.values()))
+    if isinstance(obj, (list, tuple, set, frozenset)): return size + sum(map(sizeof, obj))
+    return size
+
+def flatten(l: list):
+    flattened = []
+
+    for i in l:
+
+        if isinstance(i, (list, tuple)):
+            flattened.extend(flatten(i))
+
+        else:
+            flattened.append(i)
+
+    return flattened
 
 class FailureReturnValueError(ValueError):
     def __init__(self, value):
@@ -116,19 +138,31 @@ class Pyrew:
         output = ''.join(str(arg) for arg in args_list)
         sys.stdout.write(f"{output}{__end__}")
 
-
     class __version__:
         def __init__(self):
             pass
         
         def __repr__(self):
             return f"{__version__}"
+
+    class Meta:
+        _registry = []
+
+        def __init_subclass__(cls, **kwargs):
+            super().__init_subclass__(**kwargs)
+            cls._registry.append(cls)
         
-    """
-    class SuperObject(object):
+        @classmethod
+        def subclasses(cls):
+            return cls._registry
+
+        @classmethod
+        def issubclass(cls, other):
+            return issubclass(other, cls)
+        
         def __repr__(self):
-            return f"<{self.__class__.__sizeof__(self)} {str(str(self.__class__)[7:][:-1])} '{self.__class__.__name__}' from {str(str(self.__class__.__base__)[7:][:-1])}>"
-    """
+            self.attrs = ', '.join(f"{k}={v!r}" for k, v in self.__dict__.items())
+            return f"<{sizeof(self)}-byte {str(str(self.__class__.__base__)[7:][:-1])} object {str(str(self.__class__)[7:][:-1])} with attrs [{self.attrs}] at {hex(id(self))}>"
 
     class files:
 
@@ -384,7 +418,7 @@ class Pyrew:
             return int(1)
         
     @staticmethod
-    def format_number(*nums):
+    def fmtnum(*nums):
 
         if len(nums) > 1:
             formatted_nums = []
@@ -403,17 +437,7 @@ class Pyrew:
             
     @staticmethod
     def flatten(l: list):
-        flattened = []
-
-        for i in l:
-
-            if isinstance(i, (list, tuple)):
-                flattened.extend(i)
-
-            else:
-                flattened.append(i)
-
-        return flattened
+        return flatten(l)
     
     class averages:
 
@@ -789,7 +813,7 @@ class Pyrew:
         def fetch(self, sect, name):
             return self.cfgf[sect][name]
 
-    class Json:
+    class JSON:
 
         def __init__(self, path: str):
             self.path = path
@@ -924,6 +948,11 @@ class Pyrew:
     def hyperlink(text: str, url: str):
         return f"\033]8;;{url}\033\\{text}\033]8;;\033\\"
 
+    @staticmethod
+    def check(*conditions):
+        if all(c for c in conditions):
+            yield
+
     class HTMLView:
         def __init__(self, _path=None):
             self._path = _path
@@ -1010,6 +1039,13 @@ class Pyrew:
             else:
                 raise HTMLViewFilenameReserved
     
+    class Windows:
+
+        @staticmethod
+        def patchaio():
+            if platform.system() == 'Windows':
+                asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
     class ui:
         class App:
             def __init__(self, **kwargs):
