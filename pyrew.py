@@ -26,6 +26,7 @@ import typing
 import tkinter as tk
 import http.server
 import socketserver
+from typing import Type
 import webbrowser
 from tkhtmlview import HTMLLabel, RenderHTML
 from PIL import Image
@@ -38,7 +39,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.16.8"
+__version__ = "0.16.9"
 
 class FailureReturnValueError(ValueError):
     def __init__(self, value):
@@ -62,13 +63,22 @@ class MultiException(Exception):
         super().__init__(f"{len(exceptions)} exceptions occurred")
 
 class InvalidEmailError(ValueError):
-
     def __init__(self, email: str):
 
         self.email = email
         self.regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 
         super().__init__(f"\"{email}\" is not a valid email address, it must follow the regex {self.regex}")
+    
+class HTMLViewFilenameError(FileExistsError):
+    def __init__(self, path: str):
+        self.path = path
+
+        super().__init__(f"\"{path}\" must not be called \"index.html\"")
+
+class HTMLViewFilenameReserved(BaseException):
+    def __init__(self):
+        super().__init__(f"\"index.html\" is a reserved filename for a server")
 
 class OutputStream:
 
@@ -105,6 +115,20 @@ class Pyrew:
         
         output = ''.join(str(arg) for arg in args_list)
         sys.stdout.write(f"{output}{__end__}")
+
+
+    class __version__:
+        def __init__(self):
+            pass
+        
+        def __repr__(self):
+            return f"{__version__}"
+        
+    """
+    class SuperObject(object):
+        def __repr__(self):
+            return f"<{self.__class__.__sizeof__(self)} {str(str(self.__class__)[7:][:-1])} '{self.__class__.__name__}' from {str(str(self.__class__.__base__)[7:][:-1])}>"
+    """
 
     class files:
 
@@ -545,7 +569,7 @@ class Pyrew:
         return math.pi * (radius ** 2)
     
     @staticmethod
-    def euclid_dist(x1: float, y1: float, x2: float, y2: float) -> float:
+    def euclid(x1: float, y1: float, x2: float, y2: float) -> float:
         return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
     
     @staticmethod
@@ -606,7 +630,7 @@ class Pyrew:
         except:
             pass
 
-    class Unarray:
+    class HumanArray:
         def __init__(self, data):
             self.data = data
 
@@ -652,23 +676,6 @@ class Pyrew:
             
         def __len__(self):
             return self.max_size
-
-        
-    """
-    class Tupleset(tuple):
-        def __new__(cls, iterable):
-
-            seen = set()
-
-            new_iterable = []
-
-            for item in iterable:
-                if item not in seen:
-                    seen.add(item)
-                    new_iterable.append(item)
-            
-            return super().__new__(cls, new_iterable)
-    """
         
     class Order:
         def __init__(self, ascending=True):
@@ -829,7 +836,7 @@ class Pyrew:
             return 'Double({:.2f})'.format(self)
         
     @staticmethod
-    def unix_timestamp():
+    def unixtimestamp():
         return int(time.time())
 
     @staticmethod
@@ -914,10 +921,51 @@ class Pyrew:
                 return prep
     
     @staticmethod
-    def hyperlink(url, text):
+    def hyperlink(text: str, url: str):
         return f"\033]8;;{url}\033\\{text}\033]8;;\033\\"
-            
+
     class HTMLView:
+        def __init__(self, _path=None):
+            self._path = _path
+
+        def path(self, _path):
+            self._path = _path
+
+        def run(self, host="localhost", port=random.randint(4000, 7000)):
+            try:
+                with open(self._path, 'r') as f:
+                    self.html = f.read()
+                
+            except FileNotFoundError as e:
+                raise FileNotFoundError(f"Could not open file \"{self._path}\" because it does not exist")
+
+            try:
+
+                nttfn0 = str(int(time.time()))
+                nttfn = nttfn0 + ".html"
+
+                with open(nttfn, 'w') as f:
+                    f.write(self.html)
+                
+                handler = http.server.SimpleHTTPRequestHandler
+
+                with socketserver.TCPServer((host, port), handler) as tcps:
+                    host, port = tcps.server_address
+
+                    print(f"Serving on {Pyrew.hyperlink(f'http://{host}:{port}/', f'http://{host}:{port}/{nttfn}')}")
+
+                    try:
+                        tcps.serve_forever()
+
+                    except KeyboardInterrupt:
+                        pass
+
+                    os.remove(nttfn)
+
+            except AttributeError as e:
+                raise AttributeError(f"HTMLView class has no attribute \"{self.html}\"")
+            
+    class HTMLViewServer:
         def __init__(self, _path=None):
             self._path = _path
 
@@ -925,36 +973,42 @@ class Pyrew:
             self._path = _path
         
         def run(self, host="localhost", port=random.randint(4000, 7000)):
-            try:
-                with open(self._path, 'r') as f:
-                    self.html = f.read()
+            if not os.path.exists("index.html"):
+                if str(self._path).lower().find("index.html") == -1:
+                    try:
+                        with open(self._path, 'r') as f:
+                            self.html = f.read()
 
-            except FileNotFoundError as e:
-                print(f"\033[31mFileNotFoundError: Could not open file \"{self._path}\" because it does not exist\033[0m")
-
-            try:
-                with open("temp.html", "w") as f:
-                    f.write(self.html)
-                    
-                handler = http.server.SimpleHTTPRequestHandler
-            
-                with socketserver.TCPServer((host, port), handler) as tcs:
-                    host, port = tcs.server_address
-
-                    print(f"Serving on {Pyrew.hyperlink(f'http://{host}:{port}/temp.html', f'http://{host}:{port}/')}")
+                    except FileNotFoundError as e:
+                        raise FileNotFoundError(f"Could not open file \"{self._path}\" because it does not exist")
 
                     try:
-                        tcs.serve_forever()
+                        with open("index.html", "w") as f:
+                            f.write(self.html)
+                            
+                        handler = http.server.SimpleHTTPRequestHandler
                     
-                    except KeyboardInterrupt:
-                        pass
+                        with socketserver.TCPServer((host, port), handler) as tcps:
+                            host, port = tcps.server_address
 
-                os.remove("temp.html")    
-            
-            except AttributeError as e:
-                print(f"\033[31mAttributeError: HTMLView class has no attribute \"" + "{self.html}" + "\"\033[0m")
+                            print(f"Serving on {Pyrew.hyperlink(f'http://{host}:{port}/', f'http://{host}:{port}/')}")
 
+                            try:
+                                tcps.serve_forever()
+                            
+                            except KeyboardInterrupt:
+                                pass
+
+                        os.remove("index.html")
+                    
+                    except AttributeError as e:
+                        raise AttributeError(f"HTMLViewServer class has no attribute \"{self.html}\"")
+                    
+                else:
+                    raise HTMLViewFilenameError(path=self._path)
             
+            else:
+                raise HTMLViewFilenameReserved
     
     class ui:
         class App:
