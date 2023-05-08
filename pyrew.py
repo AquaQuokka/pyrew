@@ -43,7 +43,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.17.6.4"
+__version__ = "0.17.7"
 
 
 """
@@ -1203,7 +1203,6 @@ class Pyrew:
                 self.pencolor(self._color)
                 yield
                 self.penup()
-                turtle.done()
 
             def rotate(self, deg):
                 if deg == 0 or deg == -0:
@@ -1223,6 +1222,9 @@ class Pyrew:
 
             def press(self):
                 self.pendown()
+
+            def freeze(self):
+                turtle.done()
     
     class Windows:
         class WinDLL:
@@ -1236,6 +1238,7 @@ class Pyrew:
                 WARNING = 0x30
                 INFO = 0x40
                 ERROR = 0x10
+                TOPMOST = 0x40000
 
                 def __init__(self, title, message, properties: list=None):
                     if properties is not None:

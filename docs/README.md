@@ -57,7 +57,9 @@ MyApp()
 
 Pyrew has a built-in graphics framework for making graphical applications or simulations. It is built on top of the standard Python Turtle library.
 
-Here's an example of how to use Terrapin's Canvas class:
+Here are some examples of how to use Terrapin's Canvas class:
+
+### Subclassing
 
 ```py
 import pyrew
@@ -66,19 +68,36 @@ pyrew = pyrew.Pyrew()
 
 class MyTerrapin(pyrew.terrapin.Canvas):
     def dwg(self):
-
-        self.color("red")
-        # OR
         self._color = "red"
         
         with self.draw():
             self.circle(100)
+        
+        self.freeze()
 
 try:
     MyTerrapin().dwg()
 
 except:
     exit()
+```
+
+
+### Object Instance
+
+```py
+import pyrew
+
+pyrew = pyrew.Pyrew()
+
+tp = pyrew.terrapin.Canvas()
+
+tp.press()
+tp.color("red")
+tp.circle(100)
+tp.lift()
+
+tp.freeze()
 ```
 
 ## Pyrew WinDLL Documentation
