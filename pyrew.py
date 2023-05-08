@@ -30,6 +30,8 @@ from typing import Type
 import webbrowser
 import inspect
 import platform
+import ctypes
+import turtle
 from tkhtmlview import HTMLLabel, RenderHTML
 from PIL import Image
 
@@ -41,8 +43,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.16.10"
-
+__version__ = "0.17.0"
 
 def sizeof(obj):
     size = sys.getsizeof(obj)
@@ -1174,8 +1175,71 @@ class Pyrew:
                 
         def mainloop(self):
             self.root.mainloop()
+    
+    class terrapin:
 
-builtins.print = Pyrew().put
+        class Canvas(turtle.Turtle):
+            def __init__(self, *args, **kwargs):
+                super(Pyrew.terrapin.Canvas, self).__init__(*args, **kwargs)
+                self._color = "black"
+                turtle.title("Terrapin Graphical Simulation")
+
+            def color(self, _color):
+                self.pencolor(_color)
+                self._color = _color
+
+            @contextlib.contextmanager
+            def draw(self):
+                self.pendown()
+                self.pencolor(self._color)
+                yield
+                self.penup()
+                turtle.done()
+
+            def rotate(self, deg):
+                if deg == 0 or deg == -0:
+                    return
+                
+                elif deg > 0:
+                    self.right(deg)
+
+                elif deg < 0:
+                    self.left(deg)         
+            
+            def flip(self):
+                self.right(180)
+
+            def lift(self):
+                self.penup()
+
+            def press(self):
+                self.pendown()
+    
+    class Windows:
+        class WinDLL:
+            class MessageBox:
+
+                OK = 0x0
+                OKCANCEL = 0x01
+                YESNOCANCEL = 0x03
+                YESNO = 0x04
+                HELP = 0x4000
+                WARNING = 0x30
+                INFO = 0x40
+                ERROR = 0x10
+
+                def __init__(self, title, message, properties: list=None):
+                    if properties is not None:
+                        properties_value = 0
+                        for p in properties:
+                            properties_value |= p
+                        
+                    else:
+                        properties_value = self.MB_OK
+
+                    ctypes.windll.user32.MessageBoxW(None, message, title, properties_value)
+            
+        
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)

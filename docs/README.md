@@ -52,3 +52,42 @@ class MyApp(pyrew.ui.App):
 # Call the app's constructor method to initialize and run the application
 MyApp()
 ```
+
+## Pyrew Terrapin Canvas Documentation
+
+Pyrew has a built-in graphics framework for making graphical applications or simulations. It is built on top of the standard Python Turtle library.
+
+Here's an example of how to use a canvas:
+
+```py
+import pyrew
+import turtle
+
+pyrew = pyrew.Pyrew()
+
+class MyTerrapin(pyrew.terrapin.Canvas):
+    def dwg(self):
+        self.color("red")
+        with self.draw():
+            self.circle(100)
+
+try:
+    MyTerrapin().dwg()
+
+except turtle.Terminator:
+    exit()
+```
+
+## Pyrew WinDLL Documentation
+
+Pyrew includes a large amount of Windows utilities as well, including WinDLL!
+
+Here's an example of how to make an error box in Pyrew:
+
+```py
+import pyrew
+
+pyrew = pyrew.Pyrew()
+
+pyrew.Windows.WinDLL.MessageBox("Error", "Task failed succesfully.", [pyrew.Windows.WinDLL.MessageBox.OK, pyrew.Windows.WinDLL.MessageBox.ERROR])
+```
