@@ -43,7 +43,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.17.6.2"
+__version__ = "0.17.6.3"
 
 def sizeof(obj):
     size = sys.getsizeof(obj)

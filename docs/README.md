@@ -61,7 +61,6 @@ Here's an example of how to use Terrapin's Canvas class:
 
 ```py
 import pyrew
-import turtle
 
 pyrew = pyrew.Pyrew()
 
