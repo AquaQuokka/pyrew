@@ -78,7 +78,7 @@ class MyTerrapin(pyrew.terrapin.Canvas):
 try:
     MyTerrapin().dwg()
 
-except turtle.Terminator:
+except:
     exit()
 ```
 
