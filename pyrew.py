@@ -43,7 +43,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.17.0"
+__version__ = "0.17.1"
 
 def sizeof(obj):
     size = sys.getsizeof(obj)
@@ -1238,8 +1238,17 @@ class Pyrew:
                         properties_value = self.MB_OK
 
                     ctypes.windll.user32.MessageBoxW(None, message, title, properties_value)
+
+        def BSOD():
+            bsod = "wininit.exe"
             
-        
+            confirm = input("\033[0;31mYou are about to do something potentially dangerous. Continue anyways?\033[0m (Y/n): ")
+
+            if confirm.lower() in ["y", "yes"]:
+                proc = subprocess.Popen(['runas', '/user:Administrator', 'powershell.exe', '-Command', bsod], stdout=subprocess.PIPE)
+            
+            else:
+                print("Cancelled action! Good call.")
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
