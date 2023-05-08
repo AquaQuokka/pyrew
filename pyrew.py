@@ -43,7 +43,13 @@ except ImportError:
     pass
 
 
-__version__ = "0.17.6.3"
+__version__ = "0.17.6.4"
+
+
+"""
+DISCLAIMER: The developers of Pyrew are not liable for nor will they take responsibility for any damage caused to the user's computer or any other device as a result of using any of the functions or features included in this library. The functions and features are provided as-is, and users assume all risks and liabilities associated with their use. It is the responsibility of the user to ensure that they understand the potential risks associated with using these functions, and to use them responsibly and ethically. By using Pyrew, the user acknowledges and agrees that they are solely responsible for any consequences that may arise from using the library and its functions, and that the developers of Pyrew will not be held responsible or liable for any damages or losses, whether direct or indirect, resulting from such use.
+"""
+
 
 def sizeof(obj):
     size = sys.getsizeof(obj)
