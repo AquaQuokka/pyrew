@@ -43,7 +43,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.17.1"
+__version__ = "0.17.2"
 
 def sizeof(obj):
     size = sys.getsizeof(obj)
@@ -1249,6 +1249,21 @@ class Pyrew:
             
             else:
                 print("Cancelled action! Good call.")
+
+        def rewinx():
+            try:
+                subprocess.run('taskkill /f /im explorer.exe', shell=True)
+                time.sleep(1)
+            
+            except:
+                print("Failed to kill explorer.exe.")
+
+            try:
+                subprocess.Popen('explorer.exe')
+                print("explorer.exe started successfully.")
+            
+            except:
+                print("explorer.exe failed to restart.")
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
