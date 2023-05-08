@@ -43,7 +43,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.17.5"
+__version__ = "0.17.6.1"
 
 def sizeof(obj):
     size = sys.getsizeof(obj)
@@ -1187,6 +1187,9 @@ class Pyrew:
             def color(self, _color):
                 self.pencolor(_color)
                 self._color = _color
+
+            def bgcolor(self, _color):
+                turtle.bgcolor(_color)
 
             @contextlib.contextmanager
             def draw(self):

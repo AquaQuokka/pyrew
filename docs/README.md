@@ -53,11 +53,11 @@ class MyApp(pyrew.ui.App):
 MyApp()
 ```
 
-## Pyrew Terrapin Canvas Documentation
+## Pyrew Terrapin Documentation
 
 Pyrew has a built-in graphics framework for making graphical applications or simulations. It is built on top of the standard Python Turtle library.
 
-Here's an example of how to use a canvas:
+Here's an example of how to use Terrapin's Canvas class:
 
 ```py
 import pyrew
@@ -84,14 +84,14 @@ except turtle.Terminator:
 
 ## Pyrew WinDLL Documentation
 
-Pyrew includes a large amount of Windows utilities as well, including WinDLL!
+Pyrew has a built-in module for using WinDLL.
 
-Here's an example of how to make an error box in Pyrew:
+Here's an example of how to make a simple message box using Pyrew's WinDLL module:
 
 ```py
 import pyrew
 
 pyrew = pyrew.Pyrew()
 
-pyrew.Windows.WinDLL.MessageBox("Error", "Task failed succesfully.", [pyrew.Windows.WinDLL.MessageBox.OK, pyrew.Windows.WinDLL.MessageBox.ERROR])
+pyrew.Windows.WinDLL.MessageBox("My Message Box", "Hello, world!", [pyrew.Windows.WinDLL.MessageBox.OK, pyrew.Windows.WinDLL.MessageBox.INFO])
 ```
