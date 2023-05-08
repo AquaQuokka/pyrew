@@ -43,7 +43,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.17.4"
+__version__ = "0.17.5"
 
 def sizeof(obj):
     size = sys.getsizeof(obj)
@@ -1235,7 +1235,7 @@ class Pyrew:
                             properties_value |= p
                         
                     else:
-                        properties_value = self.MB_OK
+                        properties_value = 0x0
 
                     ctypes.windll.user32.MessageBoxW(None, message, title, properties_value)
 
