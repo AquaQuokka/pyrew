@@ -67,7 +67,11 @@ pyrew = pyrew.Pyrew()
 
 class MyTerrapin(pyrew.terrapin.Canvas):
     def dwg(self):
+
         self.color("red")
+        # OR
+        self._color = "red"
+        
         with self.draw():
             self.circle(100)
 

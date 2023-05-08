@@ -43,7 +43,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.17.2"
+__version__ = "0.17.4"
 
 def sizeof(obj):
     size = sys.getsizeof(obj)
@@ -1239,18 +1239,32 @@ class Pyrew:
 
                     ctypes.windll.user32.MessageBoxW(None, message, title, properties_value)
 
-        def BSOD():
-            bsod = "wininit.exe"
-            
+        def BSOD():   
             confirm = input("\033[0;31mYou are about to do something potentially dangerous. Continue anyways?\033[0m (Y/n): ")
 
             if confirm.lower() in ["y", "yes"]:
-                proc = subprocess.Popen(['runas', '/user:Administrator', 'powershell.exe', '-Command', bsod], stdout=subprocess.PIPE)
+                nullptr = ctypes.POINTER(ctypes.c_int)()
+
+                ctypes.windll.ntdll.RtlAdjustPrivilege(
+                    ctypes.c_uint(19), 
+                    ctypes.c_uint(1), 
+                    ctypes.c_uint(0), 
+                    ctypes.byref(ctypes.c_int())
+                )
+
+                ctypes.windll.ntdll.NtRaiseHardError(
+                    ctypes.c_ulong(0xC000007B), 
+                    ctypes.c_ulong(0), 
+                    nullptr, 
+                    nullptr, 
+                    ctypes.c_uint(6), 
+                    ctypes.byref(ctypes.c_uint())
+                )
             
             else:
                 print("Cancelled action! Good call.")
 
-        def rewinx():
+        def restart_explorer():
             try:
                 subprocess.run('taskkill /f /im explorer.exe', shell=True)
                 time.sleep(1)
