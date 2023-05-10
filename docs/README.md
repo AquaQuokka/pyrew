@@ -66,20 +66,14 @@ import pyrew
 
 pyrew = pyrew.Pyrew()
 
-class MyTerrapin(pyrew.terrapin.Canvas):
+class tpc(pyrew.terrapin.Canvas):
     def dwg(self):
-        self._color = "red"
-        
+        self._color = "blue"
         with self.draw():
-            self.circle(100)
-        
-        self.freeze()
+            self.forward(50)
+            self.rotate(90)
 
-try:
-    MyTerrapin().dwg()
-
-except:
-    exit()
+tpc()
 ```
 
 
@@ -90,14 +84,16 @@ import pyrew
 
 pyrew = pyrew.Pyrew()
 
-tp = pyrew.terrapin.Canvas()
+tpc = pyrew.terrapin.Canvas()
 
-tp.press()
-tp.color("red")
-tp.circle(100)
-tp.lift()
+tpc.press()
+tpc.color("blue")
+for i in range(0, 4, 1):
+    tpc.forward(50)
+    tpc.rotate(90)
 
-tp.freeze()
+tpc.lift()
+tpc.freeze()
 ```
 
 ## Pyrew WinDLL Documentation
@@ -111,5 +107,6 @@ import pyrew
 
 pyrew = pyrew.Pyrew()
 
-pyrew.Windows.WinDLL.MessageBox("My Message Box", "Hello, world!", [pyrew.Windows.WinDLL.MessageBox.OK, pyrew.Windows.WinDLL.MessageBox.INFO])
+mb = pyrew.Windows.WinDLL.MessageBox("My Message Box", "Hello, world!", ["OK", "INFO", "TOPMOST"])
+mb.show()
 ```

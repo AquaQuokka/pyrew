@@ -34,6 +34,9 @@ import ctypes
 import turtle
 from tkhtmlview import HTMLLabel, RenderHTML
 from PIL import Image
+from typing import List
+from typing import Tuple
+from typing import Optional
 
 try:
     import colorama
@@ -43,7 +46,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.17.7"
+__version__ = "0.18.0"
 
 
 """
@@ -1045,13 +1048,29 @@ class Pyrew:
             
             else:
                 raise HTMLViewFilenameReserved
-    
-    class Windows:
 
-        @staticmethod
-        def patchaio():
-            if platform.system() == 'Windows':
-                asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    class Math:
+        class trigonometry:
+                class sin:
+                    def find_numerator(length: float, degrees: float) -> int:
+                        return float(length * math.sin(math.radians(degrees)))
+                    
+                    def find_denominator(length: float, degrees: float) -> int:
+                        return float(length / math.sin(math.radians(degrees)))
+                    
+                class cos:
+                    def find_numerator(length: float, degrees: float) -> int:
+                        return float(length * math.cos(math.radians(degrees)))
+                    
+                    def find_denominator(length: float, degrees: float) -> int:
+                        return float(length / math.cos(math.radians(degrees)))
+                
+                class tan:
+                    def find_numerator(length: float, degrees: float) -> int:
+                        return float(length * math.tan(math.radians(degrees)))
+                    
+                    def find_denominator(length: float, degrees: float) -> int:
+                        return float(length / math.tan(math.radians(degrees)))
 
     class ui:
         class App:
@@ -1189,6 +1208,13 @@ class Pyrew:
                 super(Pyrew.terrapin.Canvas, self).__init__(*args, **kwargs)
                 self._color = "black"
                 turtle.title("Terrapin Graphical Simulation")
+                
+                try:
+                    self.dwg()
+                    self.freeze()
+                    
+                except:
+                    pass
 
             def color(self, _color):
                 self.pencolor(_color)
@@ -1229,7 +1255,6 @@ class Pyrew:
     class Windows:
         class WinDLL:
             class MessageBox:
-
                 OK = 0x0
                 OKCANCEL = 0x01
                 YESNOCANCEL = 0x03
@@ -1240,7 +1265,10 @@ class Pyrew:
                 ERROR = 0x10
                 TOPMOST = 0x40000
 
-                def __init__(self, title, message, properties: list=None):
+                def __init__(self, title, message, properties: List[any]) -> None:
+
+                    properties = self.alias(properties)
+
                     if properties is not None:
                         properties_value = 0
                         for p in properties:
@@ -1250,6 +1278,43 @@ class Pyrew:
                         properties_value = 0x0
 
                     ctypes.windll.user32.MessageBoxW(None, message, title, properties_value)
+
+                def alias(self, prop):
+                    if isinstance(prop, str):
+                        p = str(prop).upper()
+
+                        if p in ["OK"]:
+                            return self.OK
+                        
+                        elif p in ["OKCANCEL"]:
+                            return self.OKCANCEL
+                        
+                        elif p in ["YESNOCANCEL"]:
+                            return self.YESNOCANCEL
+                        
+                        elif p in ["YESNO"]:
+                            return self.YESNO
+                        
+                        elif p in ["HELP"]:
+                            return self.HELP
+                        
+                        elif p in ["WARNING"]:
+                            return self.WARNING
+                        
+                        elif p in ["INFO"]:
+                            return self.INFO
+                        
+                        elif p in ["ERROR"]:
+                            return self.ERROR
+                        
+                        elif p in ["TOPMOST"]:
+                            return self.TOPMOST
+                        
+                        else:
+                            return 0x0
+                        
+                    else:
+                        pass
 
         def BSOD():   
             confirm = input("\033[0;31mYou are about to do something potentially dangerous. Continue anyways?\033[0m (Y/n): ")
@@ -1290,6 +1355,66 @@ class Pyrew:
             
             except:
                 print("explorer.exe failed to restart.")
+
+        @staticmethod
+        def patchaio():
+            if platform.system() == 'Windows':
+                asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+            
+    class Binary:
+        def __init__(self, binary_list):
+            if set(binary_list) != {0, 1}:
+                raise ValueError("Binary must contain only \'int\' elements of \'0\' and/or \'1\'")
+            
+            self.binary_list = binary_list
+        
+        def __str__(self):
+            return "".join(str(bit) for bit in self.binary_list)
+        
+        def __len__(self):
+            return len(self.binary_list)
+        
+        def __getitem__(self, index):
+            return self.binary_list[index]
+        
+        def __setitem__(self, index, value):
+            if value not in [0, 1]:
+                raise ValueError("Binary value must be an \'int\' with a value of \'0\' or \'1\'")
+            
+            self.binary_list[index] = value
+            
+        def to_tuple(self):
+            return tuple(self.binary_list)
+        
+        @staticmethod
+        def from_tuple(binary_tuple):
+            if set(binary_tuple) != {0, 1}:
+                raise ValueError("Binary tuple must contain only 0s and 1s")
+            
+            return Pyrew.Binary(list(binary_tuple))
+        
+    @staticmethod
+    def cfor(i: Optional[int]=0, c: Optional[Tuple[int]]=None, s: Optional[int]=1, f: Optional[Tuple[str]]=None) -> None:
+        if c is not None:
+            c -= 1
+            while i <= c:
+                exec(''.join(f))
+                i += s
+
+    @staticmethod
+    def genrange(start, end):
+        l = []
+        if start <= end:
+            for i in range(start, end + 1):
+                l.append(int(i))
+
+            return l
+        
+        else:
+            for i in range(start, end - 1, -1):
+                l.append(int(i))
+        
+            return l
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
