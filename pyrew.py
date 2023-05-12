@@ -21,6 +21,8 @@ import json
 import datetime
 import time
 import smtplib
+import aiohttp
+import aiohttp.web_server
 import functools
 import typing
 import tkinter as tk
@@ -29,14 +31,17 @@ import socketserver
 from typing import Type
 import webbrowser
 import inspect
+import threading
 import platform
 import ctypes
 import turtle
+import signal
 from tkhtmlview import HTMLLabel, RenderHTML
 from PIL import Image
 from typing import List
 from typing import Tuple
 from typing import Optional
+from tkinter import messagebox
 
 try:
     import colorama
@@ -46,7 +51,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.18.0"
+__version__ = "0.19.0"
 
 
 """
@@ -1382,16 +1387,6 @@ class Pyrew:
                 raise ValueError("Binary value must be an \'int\' with a value of \'0\' or \'1\'")
             
             self.binary_list[index] = value
-            
-        def to_tuple(self):
-            return tuple(self.binary_list)
-        
-        @staticmethod
-        def from_tuple(binary_tuple):
-            if set(binary_tuple) != {0, 1}:
-                raise ValueError("Binary tuple must contain only 0s and 1s")
-            
-            return Pyrew.Binary(list(binary_tuple))
         
     @staticmethod
     def cfor(i: Optional[int]=0, c: Optional[Tuple[int]]=None, s: Optional[int]=1, f: Optional[Tuple[str]]=None) -> None:
@@ -1416,8 +1411,114 @@ class Pyrew:
         
             return l
 
+    class PPS:
+        def __init__(self, _slides: List[str]=None):
+            self._slides = _slides
+
+        def slides(self, _slides):
+            self._slides = _slides
+        
+        """
+        class Manager:
+            def __init__(self, pps):
+                self.pps = pps
+                self.root = tk.Tk()
+                self.root.title("PPS Slide Manager (Not working yet)")
+                self.root.configure(background="grey")
+                self.label = tk.Label(self.root, text="Enter slide number:")
+                self.label.pack()
+                self.slide_entry = tk.Entry(self.root)
+                self.slide_entry.pack()
+                self.button = tk.Button(self.root, text="Go to slide", command=self.go_to_slide)
+                self.button.pack()
+                
+            def go_to_slide(self):
+                self.slide_number = int(self.slide_entry.get()) - 1
+                if self.slide_number >= 0 and self.slide_number < len(self.pps._slides):
+                    self.pps.goto_slide(self.slide_number)
+                else:
+                    messagebox.showerror("Error", f"Invalid slide number: {self.slide_number + 1}")
+                    
+            def run(self):
+                self.root.mainloop()
+
+        def goto_slide(self, slide_number):
+            with open(self._slides[slide_number], "r") as f:
+                _ic = f.read()
+
+            _in = os.path.join(".pps", "source", "index.html")
+
+            with open(_in, "w") as f:
+                f.write(_ic)
+        """
+
+        def server(self, host="localhost", port=443):
+            try:
+                _pwlu = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+                _pwll = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+
+                _pwl = _pwlu + _pwll
+
+                pw = ""
+
+                for i in range(6):
+                    pw += random.choice(_pwl)
+
+                if not os.path.exists(".pps"):
+                    os.makedirs(".pps")
+
+                if not os.path.exists(os.path.join(".pps", "source")):
+                    os.makedirs(os.path.join(".pps", "source"))
+
+                os.makedirs(os.path.join(".pps", "source", pw))
+
+                for _i in range(0, len(self._slides)):
+                    i = self._slides[_i - 1]
+                    with open(i, "r") as f:
+                        _ic = f.read()
+
+                    _in = os.path.join(".pps", "source", f"{pw}", "index.html")
+
+                    with open(_in, "w") as f:
+                        f.write(_ic)
+                
+                handler = http.server.SimpleHTTPRequestHandler
+
+                with socketserver.ThreadingTCPServer((host, port), handler) as tcps:
+                    host, port = tcps.server_address
+
+                    print(f"Serving on {Pyrew.hyperlink(f'http://{host}:{port}/', f'http://{host}:{port}/.pps/source/{pw}')}")
+
+                    try:
+                        tcps.serve_forever()
+
+                    except KeyboardInterrupt:
+                        os.remove(_in)
+                        _trp2 = os.path.join(".pps", "source", f"{pw}")
+                        os.removedirs(_trp2)
+        
+            except Exception as e:
+                print(e)
+                os.remove(_in)
+                _trp2 = os.path.join(".pps", "source", f"{pw}")
+                os.removedirs(_trp2)
+
+        def run(self):
+            """
+            self.srvthread = threading.Thread(target=self.server)
+            self.srvthread.start()
+            self.Manager(self).run()
+            signal.signal(signal.SIGINT, self.ctrlc)
+            """
+
+            self.server()
+
+        """
+        def ctrlc(self, sig, frame):
+            sys.exit(0)
+        """
+
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
 setattr(builtins, "none", None)
-setattr(builtins, "null", None)
 setattr(builtins, "void", None)

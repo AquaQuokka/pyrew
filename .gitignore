@@ -9,3 +9,5 @@ build/
 .pytest_cache/
 *.html
 *.htm
+.pps/
+presentation/
