@@ -52,7 +52,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.20.3.1"
+__version__ = "0.20.4"
 
 
 """
@@ -1218,7 +1218,7 @@ class Pyrew:
                 turtle.title("Terrapin Graphical Simulation")
                 
                 try:
-                    self.__dwg__()
+                    self.dwg()
                     self.freeze()
                     
                 except:
@@ -1519,7 +1519,7 @@ class Pyrew:
             sys.exit(0)
         """
 
-    class threader:
+    class spool:
         class ThreadObject(threading.Thread):
             def __init__(self):
                 super().__init__()
@@ -1540,16 +1540,10 @@ class Pyrew:
 
             def __exit__(self, exc_type, exc_val, exc_tb):
                 self.thread.join()
-
-        @staticmethod
-        def start(thread):
-            thread.__proc__ = thread.__proc__
-            thread.start()                
-            return Pyrew.threader.Stream(thread)
         
         class Threads(list):
             def __iadd__(self, other):
-                if isinstance(other, Pyrew.threader.ThreadObject):
+                if isinstance(other, Pyrew.spool.ThreadObject):
                     self.append(other)
                 else:
                     raise TypeError(f"unsupported operand type(s) for +=: '{type(self).__name__}' and '{type(other).__name__}'")
@@ -1568,7 +1562,6 @@ class Pyrew:
                     thread.start()
                 return self
             
-    class multithreader:
         class ParallelThreadObject(multiprocessing.Process):
             def __init__(self):
                 super().__init__()
@@ -1579,7 +1572,7 @@ class Pyrew:
             def run(self):
                 self.__proc__()
 
-        class Stream:
+        class ParallelStream:
             def __init__(self, thread):
                 self.thread = thread
 
@@ -1589,15 +1582,9 @@ class Pyrew:
             def __exit__(self, exc_type, exc_val, exc_tb):
                 self.thread.join()
 
-        @staticmethod
-        def start(thread):
-            thread.__proc__ = thread.__proc__
-            thread.start()
-            return Pyrew.multithreader.Stream(thread)
-
         class ParallelThreads(list):
             def __iadd__(self, other):
-                if isinstance(other, Pyrew.multithreader.ParallelThreadObject):
+                if isinstance(other, Pyrew.spool.ParallelThreadObject):
                     self.append(other)
                 else:
                     raise TypeError(f"unsupported operand type(s) for +=: '{type(self).__name__}' and '{type(other).__name__}'")
@@ -1616,6 +1603,12 @@ class Pyrew:
                 for thread in self:
                     thread.start()
                 return self
+        
+        @staticmethod
+        def start(thread):
+            thread.__proc__ = thread.__proc__
+            thread.start()
+            return Pyrew.spool.Stream(thread)
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)

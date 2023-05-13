@@ -67,7 +67,7 @@ import pyrew
 pyrew = pyrew.Pyrew()
 
 class tpc(pyrew.terrapin.Canvas):
-    def __dwg__(self):
+    def dwg(self):
         self._color = "blue"
         with self.draw():
             self.forward(50)
@@ -113,55 +113,61 @@ mb.show()
 
 ## Pyrew Threading Documentation
 
-Pyrew has a built-in module for using threading, called `threader`. It is built upon the `threading` module, and is class-based.
+Pyrew has a built-in module for using threads, called `spool`. It is built upon the `threading` module, and is class-based.
 
-Here are some examples of how to make a simple threaded program using `threader`:
+### Sequential Threading
 
-### Sequential
+Sequential threading is the usage of threading in order.
+
+#### Using `pyrew.spool.start`
 
 ```py
 import pyrew
 
 pyrew = pyrew.Pyrew()
 
-class ThreadOne(pyrew.threader.ThreadObject):
+class ThreadOne(pyrew.spool.ThreadObject):
     def __proc__(self):
         print("Hello from ThreadOne!")
 
-class ThreadTwo(pyrew.threader.ThreadObject):
+class ThreadTwo(pyrew.spool.ThreadObject):
     def __proc__(self):
         print("Hello from ThreadTwo!")
 
-pyrew.threader.start(ThreadOne())
-pyrew.threader.start(ThreadTwo())
+pyrew.spool.start(ThreadOne())
+pyrew.spool.start(ThreadTwo())
 ```
 
 
-### Context Manager
+#### Using `pyrew.spool.Threads().start()`
 
 ```py
 import pyrew
 
 pyrew = pyrew.Pyrew()
 
-class ThreadOne(pyrew.threader.ThreadObject):
+class ThreadOne(pyrew.spool.ThreadObject):
     def __proc__(self):
         print("Hello from ThreadOne!")
 
-class ThreadTwo(pyrew.threader.ThreadObject):
+class ThreadTwo(pyrew.spool.ThreadObject):
     def __proc__(self):
         print("Hello from ThreadTwo!")
 
-with pyrew.threader.Threads().start() as threads:
+with pyrew.spool.Threads().start() as threads:
     threads += ThreadOne()
     threads += ThreadTwo()
 ```
 
-## Pyrew Multithreading Documentation
 
-Pyrew has a built-in module for using multithreading, called `multithreader`. It is built upon the `multiprocessing` module, and is class-based.
+### Parallel Threading
 
-Here is an example of how to make a simple multithreaded program using `multithreader`:
+Parallel threading is the usage of threads simultaneously in parallel, using multiple processes.
+This allows code to be non-blocking.
+
+#### IMPORTANT NOTE: Remember that the `if __name__ == '__main__'` condition is required, otherwise errors will be thrown during execution.
+
+### Using `pyrew.spool.ParallelThreads().start()`
 
 ```py
 import pyrew
@@ -169,21 +175,19 @@ import time
 
 pyrew = pyrew.Pyrew()
 
-class ThreadOne(pyrew.multithreader.ParallelThreadObject):
+class ThreadOne(pyrew.spool.ParallelThreadObject):
     def __proc__(self):
         time.sleep(2)
         print("Hello from ThreadOne!")
 
-class ThreadTwo(pyrew.multithreader.ParallelThreadObject):
+class ThreadTwo(pyrew.spool.ParallelThreadObject):
     def __proc__(self):
         print("Hello from ThreadTwo!")
 
 if __name__ == '__main__':
-    with pyrew.multithreader.ParallelThreads().start() as threads:
+    with pyrew.spool.ParallelThreads().start() as threads:
         threads += ThreadOne()
         threads += ThreadTwo()
 ```
 
-As you can see, `multithreader`, unlike `threader` executes your threads in parallel, which means that `ThreadTwo` is executed first, regardless of when it is loaded.
-
-#### IMPORTANT NOTE: Remember that the `if __name__ == '__main__'` condition is required, otherwise errors will be thrown during execution.
+As you can see, `ParallelThreadObject`, unlike `ThreadObject` executes your threads in parallel, which means that `ThreadTwo` is executed first, regardless of when it is loaded.
