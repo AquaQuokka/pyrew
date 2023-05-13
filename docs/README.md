@@ -110,3 +110,49 @@ pyrew = pyrew.Pyrew()
 mb = pyrew.Windows.WinDLL.MessageBox("My Message Box", "Hello, world!", ["OK", "INFO", "TOPMOST"])
 mb.show()
 ```
+
+## Pyrew Multithreading Documentation
+
+Pyrew has a built-in module for using multithreading, called `threader`. It is built upon the `threading` module, and is class-based.
+
+Here are some examples of how to make a simple multithreaded program using `threader`:
+
+### Sequential
+
+```py
+import pyrew
+
+pyrew = pyrew.Pyrew()
+
+class ThreadOne(pyrew.threader.ThreadObject):
+    def __proc__(self):
+        print("Hello from ThreadOne!")
+
+class ThreadTwo(pyrew.threader.ThreadObject):
+    def __proc__(self):
+        print("Hello from ThreadTwo!")
+
+pyrew.threader.start(ThreadOne())
+pyrew.threader.start(ThreadTwo())
+```
+
+
+### Context Manager
+
+```py
+import pyrew
+
+pyrew = pyrew.Pyrew()
+
+class ThreadOne(pyrew.threader.ThreadObject):
+    def __proc__(self):
+        print("Hello from ThreadOne!")
+
+class ThreadTwo(pyrew.threader.ThreadObject):
+    def __proc__(self):
+        print("Hello from ThreadTwo!")
+
+with pyrew.threader.Threads().start() as threads:
+    threads += ThreadOne()
+    threads += ThreadTwo()
+```

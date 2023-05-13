@@ -1518,6 +1518,59 @@ class Pyrew:
             sys.exit(0)
         """
 
+    class threader:
+        class ThreadObject(threading.Thread):
+            def __init__(self):
+                super().__init__()
+                self.setDaemon(True)
+
+            def __proc__(self):
+                pass
+
+            def run(self):
+                self.__proc__()
+
+        class Stream:
+            def __init__(self, thread):
+                self.thread = thread
+
+            def __enter__(self):
+                pass
+
+            def __exit__(self, exc_type, exc_val, exc_tb):
+                self.thread.join()
+
+        @staticmethod
+        def start(thread):
+            thread.__proc__ = thread.__proc__
+            thread.start()                
+            return Pyrew.threader.Stream(thread)
+        
+        class Threads(list):
+            def __iadd__(self, other):
+                if isinstance(other, Pyrew.threader.ThreadObject):
+                    self.append(other)
+                else:
+                    raise TypeError(f"unsupported operand type(s) for +=: '{type(self).__name__}' and '{type(other).__name__}'")
+                return self
+            
+            def __enter__(self):
+                return self.start()
+
+            def __exit__(self, exc_type, exc_val, exc_tb):
+                for thread in self:
+                    thread.start()
+                    thread.join()
+
+            def start(self):
+                for thread in self:
+                    thread.start()
+                return self
+
+            
+
+
+
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
 setattr(builtins, "none", None)
