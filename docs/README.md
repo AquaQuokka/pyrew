@@ -113,11 +113,11 @@ mb.show()
 
 ## Pyrew Threading Documentation
 
-Pyrew has a built-in module for using threads, called `spool`. It is built upon the `threading` module, and is class-based.
+Pyrew has a built-in module for using threads, called `spool`. It is built upon the `threading` and `multiprocessing` modules, and is class-based.
 
 ### Sequential Threading
 
-Sequential threading is the usage of threading in order.
+Sequential threading is the usage of threading in order. Sequential thread are subclassed from `threading.Thread`.
 
 #### Using `pyrew.spool.start`
 
@@ -164,6 +164,7 @@ with pyrew.spool.Threads().start() as threads:
 
 Parallel threading is the usage of threads simultaneously in parallel, using multiple processes.
 This allows code to be non-blocking.
+Parallel threads are subclassed from `multiprocessing.Process`.
 
 #### IMPORTANT NOTE: Remember that the `if __name__ == '__main__'` condition is required, otherwise errors will be thrown during execution.
 
