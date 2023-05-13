@@ -28,7 +28,6 @@ import typing
 import tkinter as tk
 import http.server
 import socketserver
-from typing import Type
 import webbrowser
 import inspect
 import threading
@@ -39,9 +38,7 @@ import turtle
 import signal
 from tkhtmlview import HTMLLabel, RenderHTML
 from PIL import Image
-from typing import List
-from typing import Tuple
-from typing import Optional
+from typing import Type, List, Tuple, Optional, TypeVar, Callable, Any, Union, overload, get_type_hints
 from tkinter import messagebox
 
 try:
@@ -52,7 +49,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.20.4"
+__version__ = "0.20.7"
 
 
 """
@@ -117,6 +114,14 @@ class HTMLViewFilenameError(FileExistsError):
 class HTMLViewFilenameReserved(BaseException):
     def __init__(self):
         super().__init__(f"\"index.html\" is a reserved filename for a server")
+
+class StaticTypeError(TypeError):
+    def __init__(self, name: str, expected: Type, actual: Type) -> None:
+        try:
+            super().__init__(f"{name!r} expected type \'{expected.__name__}\' but got type \'{actual.__name__}\'")
+        except Exception as e:
+            if not isinstance(e, (StaticTypeError)):
+                super().__init__(f"{name!r} expected type \'{expected}\' but got type \'{actual}\'")
 
 class OutputStream:
 
@@ -1609,6 +1614,67 @@ class Pyrew:
             thread.__proc__ = thread.__proc__
             thread.start()
             return Pyrew.spool.Stream(thread)
+        
+    """  
+    class TyperMeta(type):
+        T = TypeVar('T')
+        def __call__(cls, *args, **kwargs):
+            instance = super().__call__(*args, **kwargs)
+            hint = instance._hint
+            instance.static(hint)
+            return instance
+        
+    class TyperMeta(type):
+        def __call__(cls, *args, **kwargs):
+            hint = None
+            frame = inspect.currentframe().f_back
+            try:
+                if 'return' in frame.f_code.co_name:
+                    hint = frame.f_locals['return']
+                else:
+                    for name, value in frame.f_locals.items():
+                        if isinstance(value, cls) and type(value).__name__ == 'Typer':
+                            hint = typing.get_args(getattr(value, '__orig_class__').__args__[0])[0]
+                        elif name != 'self' and isinstance(value, typing._GenericAlias) and value.__origin__ == cls:
+                            hint = typing.get_args(value)[0]
+                        elif name != 'self' and isinstance(value, cls):
+                            hint = typing.get_type_hints(frame.f_locals[name]).get(name)
+            finally:
+                del frame
+
+            instance = super().__call__(*args, **kwargs)
+            if hint:
+                instance.static(hint)
+            return instance
+    """
+        
+    class Typer:
+        T = TypeVar('T')
+
+        """
+        _hint: Type[T]
+        """
+
+        def __init__(self, *args: Type[T]) -> None:
+            self.args = args
+            
+            """
+            self.hint = get_type_hints(self.__class__)
+            self.static(self.hint)
+            """
+
+        def static(self: Type['Pyrew.Typer[Type[T]]'], expects: type) -> 'Pyrew.Typer[Type[T]]':
+            for arg in self.args:
+                if not isinstance(arg, expects):
+                    raise StaticTypeError(str(arg), expects, type(arg))
+
+            return self
+        
+        def val(self) -> Tuple[Type[T], ...]:
+            return self.args
+        
+        def __repr__(self):
+            return str(self.args)
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
