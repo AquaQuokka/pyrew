@@ -185,3 +185,5 @@ if __name__ == '__main__':
 ```
 
 As you can see, `multithreader`, unlike `threader` executes your threads in parallel, which means that `ThreadTwo` is executed first, regardless of when it is loaded.
+
+#### IMPORTANT NOTE: Remember that the `if __name__ == '__main__'` condition is required, otherwise errors will be thrown during execution.
