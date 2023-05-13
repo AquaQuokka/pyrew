@@ -32,6 +32,7 @@ from typing import Type
 import webbrowser
 import inspect
 import threading
+import multiprocessing
 import platform
 import ctypes
 import turtle
@@ -51,7 +52,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.19.0"
+__version__ = "0.20.3"
 
 
 """
@@ -269,7 +270,7 @@ class Pyrew:
             os.system('cls' if os.name == 'nt' else 'clear')
 
     @staticmethod
-    def tupmod(tup, index, val):
+    def tupedit(tup, index, val):
         return tup[:index] + (val,) + tup[index + 1:]
     
     @staticmethod
@@ -1008,7 +1009,8 @@ class Pyrew:
 
             except AttributeError as e:
                 raise AttributeError(f"HTMLView class has no attribute \"{self.html}\"")
-            
+    
+    """
     class HTMLViewServer:
         def __init__(self, _path=None):
             self._path = _path
@@ -1076,6 +1078,7 @@ class Pyrew:
                     
                     def find_denominator(length: float, degrees: float) -> int:
                         return float(length / math.tan(math.radians(degrees)))
+    """
 
     class ui:
         class App:
@@ -1215,7 +1218,7 @@ class Pyrew:
                 turtle.title("Terrapin Graphical Simulation")
                 
                 try:
-                    self.dwg()
+                    self.__dwg__()
                     self.freeze()
                     
                 except:
@@ -1387,7 +1390,8 @@ class Pyrew:
                 raise ValueError("Binary value must be an \'int\' with a value of \'0\' or \'1\'")
             
             self.binary_list[index] = value
-        
+    
+    """
     @staticmethod
     def cfor(i: Optional[int]=0, c: Optional[Tuple[int]]=None, s: Optional[int]=1, f: Optional[Tuple[str]]=None) -> None:
         if c is not None:
@@ -1395,6 +1399,7 @@ class Pyrew:
             while i <= c:
                 exec(''.join(f))
                 i += s
+    """
 
     @staticmethod
     def genrange(start, end):
@@ -1411,6 +1416,7 @@ class Pyrew:
         
             return l
 
+    """
     class PPS:
         def __init__(self, _slides: List[str]=None):
             self._slides = _slides
@@ -1418,7 +1424,6 @@ class Pyrew:
         def slides(self, _slides):
             self._slides = _slides
         
-        """
         class Manager:
             def __init__(self, pps):
                 self.pps = pps
@@ -1450,7 +1455,6 @@ class Pyrew:
 
             with open(_in, "w") as f:
                 f.write(_ic)
-        """
 
         def server(self, host="localhost", port=443):
             try:
@@ -1504,16 +1508,13 @@ class Pyrew:
                 os.removedirs(_trp2)
 
         def run(self):
-            """
             self.srvthread = threading.Thread(target=self.server)
             self.srvthread.start()
             self.Manager(self).run()
             signal.signal(signal.SIGINT, self.ctrlc)
-            """
 
             self.server()
 
-        """
         def ctrlc(self, sig, frame):
             sys.exit(0)
         """
@@ -1566,10 +1567,55 @@ class Pyrew:
                 for thread in self:
                     thread.start()
                 return self
-
             
+    class multithreader:
+        class ParallelThreadObject(multiprocessing.Process):
+            def __init__(self):
+                super().__init__()
+            
+            def __proc__(self):
+                pass
+            
+            def run(self):
+                self.__proc__()
 
+        class Stream:
+            def __init__(self, thread):
+                self.thread = thread
 
+            def __enter__(self):
+                pass
+
+            def __exit__(self, exc_type, exc_val, exc_tb):
+                self.thread.join()
+
+        @staticmethod
+        def start(thread):
+            thread.__proc__ = thread.__proc__
+            thread.start()
+            return Pyrew.multithreader.Stream(thread)
+
+        class ParallelThreads(list):
+            def __iadd__(self, other):
+                if isinstance(other, Pyrew.multithreader.ParallelThreadObject):
+                    self.append(other)
+                else:
+                    raise TypeError(f"unsupported operand type(s) for +=: '{type(self).__name__}' and '{type(other).__name__}'")
+                return self
+
+            def __enter__(self):
+                return self.start()
+
+            def __exit__(self, exc_type, exc_val, exc_tb):
+                for thread in self:
+                    thread.start()
+                for thread in self:
+                    thread.join()
+
+            def start(self):
+                for thread in self:
+                    thread.start()
+                return self
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)

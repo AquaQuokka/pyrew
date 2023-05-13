@@ -67,7 +67,7 @@ import pyrew
 pyrew = pyrew.Pyrew()
 
 class tpc(pyrew.terrapin.Canvas):
-    def dwg(self):
+    def __dwg__(self):
         self._color = "blue"
         with self.draw():
             self.forward(50)
@@ -111,11 +111,11 @@ mb = pyrew.Windows.WinDLL.MessageBox("My Message Box", "Hello, world!", ["OK", "
 mb.show()
 ```
 
-## Pyrew Multithreading Documentation
+## Pyrew Threading Documentation
 
-Pyrew has a built-in module for using multithreading, called `threader`. It is built upon the `threading` module, and is class-based.
+Pyrew has a built-in module for using threading, called `threader`. It is built upon the `threading` module, and is class-based.
 
-Here are some examples of how to make a simple multithreaded program using `threader`:
+Here are some examples of how to make a simple threaded program using `threader`:
 
 ### Sequential
 
@@ -156,3 +156,32 @@ with pyrew.threader.Threads().start() as threads:
     threads += ThreadOne()
     threads += ThreadTwo()
 ```
+
+## Pyrew Multithreading Documentation
+
+Pyrew has a built-in module for using multithreading, called `multithreader`. It is built upon the `multiprocessing` module, and is class-based.
+
+Here is an example of how to make a simple multithreaded program using `multithreader`:
+
+```py
+import pyrew
+import time
+
+pyrew = pyrew.Pyrew()
+
+class ThreadOne(pyrew.multithreader.ParallelThreadObject):
+    def __proc__(self):
+        time.sleep(2)
+        print("Hello from ThreadOne!")
+
+class ThreadTwo(pyrew.multithreader.ParallelThreadObject):
+    def __proc__(self):
+        print("Hello from ThreadTwo!")
+
+if __name__ == '__main__':
+    with pyrew.multithreader.ParallelThreads().start() as threads:
+        threads += ThreadOne()
+        threads += ThreadTwo()
+```
+
+As you can see, `multithreader`, unlike `threader` executes your threads in parallel, which means that `ThreadTwo` is executed first, regardless of when it is loaded.
