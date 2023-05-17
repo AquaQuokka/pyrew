@@ -113,7 +113,7 @@ mb.show()
 
 ## Pyrew Threading Documentation
 
-Pyrew has a built-in module for using threads, called `threader`. It is built upon the `threading` module, and is class-based.
+Pyrew has a built-in module for using threads, called `threader`. It is built upon the `threading` and `multiprocessing` modules, and is class-based.
 
 ### Sequential Threading
 
