@@ -113,48 +113,49 @@ mb.show()
 
 ## Pyrew Threading Documentation
 
-Pyrew has a built-in module for using threads, called `spool`. It is built upon the `threading` module, and is class-based.
+Pyrew has a built-in module for using threads, called `threader`. It is built upon the `threading` module, and is class-based.
 
 ### Sequential Threading
 
 Sequential threading is the usage of threading in order.
+Sequential threads are subclasses of `threading.Thread`.
 
-#### Using `pyrew.spool.start`
+#### Using `pyrew.threader.start`
 
 ```py
 import pyrew
 
 pyrew = pyrew.Pyrew()
 
-class ThreadOne(pyrew.spool.ThreadObject):
-    def __proc__(self):
+class ThreadOne(pyrew.threader.ThreadObject):
+    def thread(self):
         print("Hello from ThreadOne!")
 
-class ThreadTwo(pyrew.spool.ThreadObject):
-    def __proc__(self):
+class ThreadTwo(pyrew.threader.ThreadObject):
+    def thread(self):
         print("Hello from ThreadTwo!")
 
-pyrew.spool.start(ThreadOne())
-pyrew.spool.start(ThreadTwo())
+pyrew.threader.start(ThreadOne())
+pyrew.threader.start(ThreadTwo())
 ```
 
 
-#### Using `pyrew.spool.Threads().start()`
+#### Using `pyrew.threader.Threads().start()`
 
 ```py
 import pyrew
 
 pyrew = pyrew.Pyrew()
 
-class ThreadOne(pyrew.spool.ThreadObject):
-    def __proc__(self):
+class ThreadOne(pyrew.threader.ThreadObject):
+    def thread(self):
         print("Hello from ThreadOne!")
 
-class ThreadTwo(pyrew.spool.ThreadObject):
-    def __proc__(self):
+class ThreadTwo(pyrew.threader.ThreadObject):
+    def thread(self):
         print("Hello from ThreadTwo!")
 
-with pyrew.spool.Threads().start() as threads:
+with pyrew.threader.Threads().start() as threads:
     threads += ThreadOne()
     threads += ThreadTwo()
 ```
@@ -164,10 +165,11 @@ with pyrew.spool.Threads().start() as threads:
 
 Parallel threading is the usage of threads simultaneously in parallel, using multiple processes.
 This allows code to be non-blocking.
+Parallel threads are subclasses of `multiprocessing.Process`.
 
 #### IMPORTANT NOTE: Remember that the `if __name__ == '__main__'` condition is required, otherwise errors will be thrown during execution.
 
-### Using `pyrew.spool.ParallelThreads().start()`
+### Using `pyrew.threader.ParallelThreads().start()`
 
 ```py
 import pyrew
@@ -175,17 +177,17 @@ import time
 
 pyrew = pyrew.Pyrew()
 
-class ThreadOne(pyrew.spool.ParallelThreadObject):
-    def __proc__(self):
-        time.sleep(2)
+class ThreadOne(pyrew.threader.ParallelThreadObject):
+    def thread(self):
+        time.sleep(1)
         print("Hello from ThreadOne!")
 
-class ThreadTwo(pyrew.spool.ParallelThreadObject):
-    def __proc__(self):
+class ThreadTwo(pyrew.threader.ParallelThreadObject):
+    def thread(self):
         print("Hello from ThreadTwo!")
 
 if __name__ == '__main__':
-    with pyrew.spool.ParallelThreads().start() as threads:
+    with pyrew.threader.ParallelThreads().start() as threads:
         threads += ThreadOne()
         threads += ThreadTwo()
 ```

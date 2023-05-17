@@ -34,11 +34,12 @@ import threading
 import multiprocessing
 import platform
 import ctypes
+import flask as fl
 import turtle
 import signal
 from tkhtmlview import HTMLLabel, RenderHTML
 from PIL import Image
-from typing import Type, List, Tuple, Optional, TypeVar, Callable, Any, Union, overload, get_type_hints
+from typing import Type, List, Tuple, Optional, TypeVar, Callable, Any, Union, overload, get_type_hints, Dict
 from tkinter import messagebox
 
 try:
@@ -49,7 +50,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.20.7"
+__version__ = "0.20.8"
 
 
 """
@@ -1374,7 +1375,7 @@ class Pyrew:
             if platform.system() == 'Windows':
                 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
             
-    class Binary:
+    class BinTree:
         def __init__(self, binary_list):
             if set(binary_list) != {0, 1}:
                 raise ValueError("Binary must contain only \'int\' elements of \'0\' and/or \'1\'")
@@ -1524,17 +1525,17 @@ class Pyrew:
             sys.exit(0)
         """
 
-    class spool:
+    class threader:
         class ThreadObject(threading.Thread):
             def __init__(self):
                 super().__init__()
                 self.setDaemon(True)
 
-            def __proc__(self):
+            def thread(self):
                 pass
 
             def run(self):
-                self.__proc__()
+                self.thread()
 
         class Stream:
             def __init__(self, thread):
@@ -1548,7 +1549,7 @@ class Pyrew:
         
         class Threads(list):
             def __iadd__(self, other):
-                if isinstance(other, Pyrew.spool.ThreadObject):
+                if isinstance(other, Pyrew.threader.ThreadObject):
                     self.append(other)
                 else:
                     raise TypeError(f"unsupported operand type(s) for +=: '{type(self).__name__}' and '{type(other).__name__}'")
@@ -1571,11 +1572,11 @@ class Pyrew:
             def __init__(self):
                 super().__init__()
             
-            def __proc__(self):
+            def thread(self):
                 pass
             
             def run(self):
-                self.__proc__()
+                self.thread()
 
         class ParallelStream:
             def __init__(self, thread):
@@ -1589,7 +1590,7 @@ class Pyrew:
 
         class ParallelThreads(list):
             def __iadd__(self, other):
-                if isinstance(other, Pyrew.spool.ParallelThreadObject):
+                if isinstance(other, Pyrew.threader.ParallelThreadObject):
                     self.append(other)
                 else:
                     raise TypeError(f"unsupported operand type(s) for +=: '{type(self).__name__}' and '{type(other).__name__}'")
@@ -1611,70 +1612,24 @@ class Pyrew:
         
         @staticmethod
         def start(thread):
-            thread.__proc__ = thread.__proc__
             thread.start()
-            return Pyrew.spool.Stream(thread)
-        
-    """  
-    class TyperMeta(type):
-        T = TypeVar('T')
-        def __call__(cls, *args, **kwargs):
-            instance = super().__call__(*args, **kwargs)
-            hint = instance._hint
-            instance.static(hint)
-            return instance
-        
-    class TyperMeta(type):
-        def __call__(cls, *args, **kwargs):
-            hint = None
-            frame = inspect.currentframe().f_back
+            return Pyrew.threader.Stream(thread)
+
+    class flask:
+        def render(path, *v: list):
+            cfd = os.path.join(os.path.dirname(os.path.abspath(__file__)), path)
+
+            with open(cfd, 'r') as f:
+                template = str(f.read())
+
             try:
-                if 'return' in frame.f_code.co_name:
-                    hint = frame.f_locals['return']
-                else:
-                    for name, value in frame.f_locals.items():
-                        if isinstance(value, cls) and type(value).__name__ == 'Typer':
-                            hint = typing.get_args(getattr(value, '__orig_class__').__args__[0])[0]
-                        elif name != 'self' and isinstance(value, typing._GenericAlias) and value.__origin__ == cls:
-                            hint = typing.get_args(value)[0]
-                        elif name != 'self' and isinstance(value, cls):
-                            hint = typing.get_type_hints(frame.f_locals[name]).get(name)
-            finally:
-                del frame
-
-            instance = super().__call__(*args, **kwargs)
-            if hint:
-                instance.static(hint)
-            return instance
-    """
-        
-    class Typer:
-        T = TypeVar('T')
-
-        """
-        _hint: Type[T]
-        """
-
-        def __init__(self, *args: Type[T]) -> None:
-            self.args = args
+                for i in v:
+                    template = template.replace('{{' + i[1] + '}}', i[0])
             
-            """
-            self.hint = get_type_hints(self.__class__)
-            self.static(self.hint)
-            """
+            except IndexError:
+                pass
 
-        def static(self: Type['Pyrew.Typer[Type[T]]'], expects: type) -> 'Pyrew.Typer[Type[T]]':
-            for arg in self.args:
-                if not isinstance(arg, expects):
-                    raise StaticTypeError(str(arg), expects, type(arg))
-
-            return self
-        
-        def val(self) -> Tuple[Type[T], ...]:
-            return self.args
-        
-        def __repr__(self):
-            return str(self.args)
+            return fl.render_template_string(template)
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
