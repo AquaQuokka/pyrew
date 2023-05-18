@@ -50,7 +50,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.20.8"
+__version__ = "0.20.9"
 
 
 """
@@ -1618,13 +1618,14 @@ class Pyrew:
     class flask:
         def render(path, *v: list):
             cfd = os.path.join(os.path.dirname(os.path.abspath(__file__)), path)
+            cwd = os.path.join(os.getcwd(), path)
 
             with open(cfd, 'r') as f:
                 template = str(f.read())
 
             try:
                 for i in v:
-                    template = template.replace('{{' + i[1] + '}}', i[0])
+                    template = template.replace('{{' + i[0] + '}}', i[1])
             
             except IndexError:
                 pass
