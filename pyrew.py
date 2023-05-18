@@ -37,10 +37,13 @@ import ctypes
 import flask as fl
 import turtle
 import signal
+import urllib
+import requests
 from tkhtmlview import HTMLLabel, RenderHTML
 from PIL import Image
 from typing import Type, List, Tuple, Optional, TypeVar, Callable, Any, Union, overload, get_type_hints, Dict
 from tkinter import messagebox
+from jinja2 import Environment, FileSystemLoader
 
 try:
     import colorama
@@ -50,7 +53,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.20.9"
+__version__ = "0.22.2"
 
 
 """
@@ -76,6 +79,34 @@ def flatten(l: list):
             flattened.append(i)
 
     return flattened
+
+def __tree__(root, max_depth=None, exclude=None, indent=''):
+    if not os.path.isdir(root):
+        print("Invalid directory path.")
+        return
+    
+    if exclude is not None and any(ex in root for ex in exclude):
+        return
+    
+    try:
+        items = os.listdir(root)
+
+        for i, item in enumerate(sorted(items)):
+            item_path = os.path.join(root, item)
+            is_last = i == len(items) - 1
+            
+            if os.path.isdir(item_path):
+                print(f"{indent}{'└──' if is_last else '├──'} {item}/")
+                sub_indent = indent + '    ' if is_last else indent + '│   '
+                
+                if max_depth is None or len(sub_indent) // 4 < max_depth:
+                    __tree__(item_path, indent=sub_indent, max_depth=max_depth, exclude=exclude)
+            else:
+                print(f"{indent}{'└──' if is_last else '├──'} {item}")
+    
+    except PermissionError as e:
+        print(f"{indent}Permission Denied ({e.filename})")
+        return
 
 class FailureReturnValueError(ValueError):
     def __init__(self, value):
@@ -1631,6 +1662,95 @@ class Pyrew:
                 pass
 
             return fl.render_template_string(template)
+        
+    @staticmethod
+    def tree(root, max_depth=None, exclude=None, indent='', ):
+        __tree__(root, max_depth, exclude, indent)
+
+    @staticmethod
+    def curl(url):
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            print(response.text)
+        except requests.exceptions.RequestException as e:
+            print(f"Error: {e}")
+
+    class fluid:
+        class Router:
+            def __init__(self):
+                self.routes = []
+            
+            def route(self, pattern='/'):
+                def decorator(callback):
+                    compiled_pattern = re.compile(pattern)
+                    self.routes.append((compiled_pattern, callback))
+                    return callback
+                
+                return decorator
+
+            def handle(self, path):
+                for route in self.routes:
+                    match = route[0].match(path)
+
+                    if match:
+                        callback = route[1]
+                        params = match.groups()
+                        return callback(*params)
+                    
+                return self.not_found()
+            
+            def not_found(self):
+                return '404 - Not Found'
+            
+        class Env:
+            def __init__(self, template_dir=''):
+                self.template_dir = template_dir
+                if template_dir.startswith('/'):
+                    self.template_dir = self.template_dir[1:]
+                    
+                self.env = Environment(loader=FileSystemLoader(self.template_dir))
+
+            def prelude(self, template_name, **context):
+                template = self.env.get_template(template_name)
+                return template.render(**context)
+            
+        class Handler(http.server.SimpleHTTPRequestHandler):
+            def __init__(self, *args, **kwargs):
+                self.router = kwargs.pop('router')
+                super().__init__(*args, **kwargs)
+
+            def do_GET(self):
+                path = urllib.parse.urlparse(self.path).path
+
+                result = self.router.handle(path)
+
+                if result == '404 - Not Found':
+                    super().do_GET()
+
+                else:
+                    self.send_response(200)
+                    if path.endswith('.html'):
+                        self.send_header('Content-type', 'text/html')
+                    elif path.endswith('.css'):
+                        self.send_header('Content-type', 'text/css')
+                    elif path.endswith('.js'):
+                        self.send_header('Content-type', 'application/javascript')
+                    self.end_headers()
+
+                    self.wfile.write(result.encode())
+
+        def host(router, host='localhost', port=8000, directory=''):
+            handler = lambda *args, **kwargs: Pyrew.fluid.Handler(*args, router=router, **kwargs)
+
+            try:
+                with socketserver.TCPServer(('', port), handler) as httpd:
+                    print(f"Serving on {Pyrew.hyperlink(f'http://{host}:{port}/', f'http://{host}:{port}/')}")
+                    httpd.serve_forever()
+            
+            except KeyboardInterrupt:
+                exit()
+
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)

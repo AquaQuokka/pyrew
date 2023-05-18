@@ -193,3 +193,54 @@ if __name__ == '__main__':
 ```
 
 As you can see, `ParallelThreadObject`, unlike `ThreadObject` executes your threads in parallel, which means that `ThreadTwo` is executed first, regardless of when it is loaded.
+
+
+## Pyrew Fluid Documentation
+
+Pyrew has a simple built-in web framework called Fluid, which is located at `pyrew.Pyrew.fluid`, and provides a simple way to create web apps and servers.
+
+Here is an example of a simple web server using Fluid:
+
+```py
+import pyrew
+
+pyrew = pyrew.Pyrew()
+
+app = pyrew.fluid.Router()
+env = pyrew.fluid.Env()
+
+@app.route()
+def home():
+    return env.prelude('index.html')
+
+@app.route('/about')
+def about():
+    return env.prelude('about.html')
+
+if __name__ == '__main__':
+    pyrew.fluid.host(app)
+```
+
+
+If you want to store your server's files in a separate directory, you can use the `template_dir` argument of the `Env` class to specify the directory where your server files will be stored, like so:
+
+```py
+import pyrew
+
+pyrew = pyrew.Pyrew()
+
+app = pyrew.fluid.Router()
+env = pyrew.fluid.Env('/app')
+
+@app.route()
+def home():
+    return env.prelude('index.html')
+
+@app.route('/about')
+def about():
+    return env.prelude('about.html')
+
+if __name__ == '__main__':
+    pyrew.fluid.host(app)
+```
+
