@@ -34,11 +34,13 @@ import threading
 import multiprocessing
 import platform
 import ctypes
+import struct
 import flask as fl
 import turtle
 import signal
 import urllib
 import requests
+import decimal
 from tkhtmlview import HTMLLabel, RenderHTML
 from PIL import Image
 from typing import Type, List, Tuple, Optional, TypeVar, Callable, Any, Union, overload, get_type_hints, Dict
@@ -53,7 +55,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.22.2"
+__version__ = "0.23.0"
 
 
 """
@@ -80,7 +82,16 @@ def flatten(l: list):
 
     return flattened
 
-def __tree__(root, max_depth=None, exclude=None, indent=''):
+def __tree__(root, max_depth=None, exclude=None, indent='', legacy: bool=False):
+    if legacy:
+        branch = "|---"
+        final  = "|___"
+
+    else:
+        branch = "├──"
+        final  = "└──"
+
+
     if not os.path.isdir(root):
         print("Invalid directory path.")
         return
@@ -96,13 +107,13 @@ def __tree__(root, max_depth=None, exclude=None, indent=''):
             is_last = i == len(items) - 1
             
             if os.path.isdir(item_path):
-                print(f"{indent}{'└──' if is_last else '├──'} {item}/")
+                print(f"{indent}{final if is_last else branch} {item}/")
                 sub_indent = indent + '    ' if is_last else indent + '│   '
                 
                 if max_depth is None or len(sub_indent) // 4 < max_depth:
                     __tree__(item_path, indent=sub_indent, max_depth=max_depth, exclude=exclude)
             else:
-                print(f"{indent}{'└──' if is_last else '├──'} {item}")
+                print(f"{indent}{final if is_last else branch} {item}")
     
     except PermissionError as e:
         print(f"{indent}Permission Denied ({e.filename})")
@@ -136,7 +147,18 @@ class InvalidEmailError(ValueError):
         self.regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 
         super().__init__(f"\"{email}\" is not a valid email address, it must follow the regex {self.regex}")
-    
+                
+class BitError(ValueError):
+    def __init__(self, tp: str, lim: int):
+        self.lim = str(lim)
+        super().__init__(f"{tp!r} value exceeds {self.lim}-bit bit constraints")
+
+class UBitError(ValueError):
+    def __init__(self, tp: str, lim: int):
+        self.lim = str(lim)
+        super().__init__(f"{tp!r} value exceeds {self.lim}-bit bit constraints or is a negative number")
+
+"""
 class HTMLViewFilenameError(FileExistsError):
     def __init__(self, path: str):
         self.path = path
@@ -154,6 +176,7 @@ class StaticTypeError(TypeError):
         except Exception as e:
             if not isinstance(e, (StaticTypeError)):
                 super().__init__(f"{name!r} expected type \'{expected}\' but got type \'{actual}\'")
+"""
 
 class OutputStream:
 
@@ -1006,6 +1029,7 @@ class Pyrew:
         if all(c for c in conditions):
             yield
 
+    """
     class HTMLView:
         def __init__(self, _path=None):
             self._path = _path
@@ -1047,7 +1071,6 @@ class Pyrew:
             except AttributeError as e:
                 raise AttributeError(f"HTMLView class has no attribute \"{self.html}\"")
     
-    """
     class HTMLViewServer:
         def __init__(self, _path=None):
             self._path = _path
@@ -1664,8 +1687,8 @@ class Pyrew:
             return fl.render_template_string(template)
         
     @staticmethod
-    def tree(root, max_depth=None, exclude=None, indent='', ):
-        __tree__(root, max_depth, exclude, indent)
+    def tree(root, max_depth=None, exclude=None, indent='', legacy=False):
+        __tree__(root, max_depth, exclude, indent, legacy)
 
     @staticmethod
     def curl(url):
@@ -1750,6 +1773,289 @@ class Pyrew:
             
             except KeyboardInterrupt:
                 exit()
+
+    class gotypes:
+        class int32(int):
+            def __new__(cls, value=0):
+                if not isinstance(value, int):
+                    raise TypeError("int32 value must be an integer")
+
+                if value < -2147483648 or value > 2147483647:
+                    raise BitError("int32", 32)
+
+                return super().__new__(cls, value & 0xffffffff)
+                
+        class int64(int):
+            def __new__(cls, value=0):
+                if not isinstance(value, int):
+                    raise TypeError("int64 value must be an integer")
+                
+                if value < -9223372036854775808 or value > 9223372036854775807:
+                    raise BitError("int64", 64)
+                
+                return super().__new__(cls, value & 0xffffffffffffffff)
+        
+        class uint32(int):
+            def __new__(cls, value=0):
+                if not isinstance(value, int):
+                    raise TypeError("uint32 value must be an integer")
+
+                if value < 0 or value > 4294967295:
+                    raise UBitError("uint32", 32)
+
+                return super().__new__(cls, value & 0xffffffff)
+            
+        class uint64(int):
+            def __new__(cls, value=0):
+                if not isinstance(value, int):
+                    raise TypeError("uint64 value must be an integer")
+
+                if value < 0 or value > 18446744073709551615:
+                    raise UBitError("uint64", 64)
+
+                return super().__new__(cls, value & 0xffffffffffffffff)
+            
+        class float32(float):
+            def __new__(cls, value=0.0):
+                if not isinstance(value, float):
+                    raise TypeError("float32 value must be a float")
+
+                packed = struct.pack("f", value)
+                unpacked = struct.unpack("f", packed)
+
+                if unpacked[0] < -3.402823466e38 or unpacked[0] > 3.402823466e38:
+                    raise BitError("float32", 32)
+
+                return super().__new__(cls, unpacked[0])
+            
+        class float64(float):
+            def __new__(cls, value=0.0):
+                if not isinstance(value, float):
+                    raise TypeError("float64 value must be a float")
+                
+                packed = struct.pack("d", value)
+                unpacked = struct.unpack("d", packed)
+
+                if unpacked[0] < -1.7976931348623157e308 or unpacked[0] > 1.7976931348623157e308:
+                    raise BitError("float64", 64)
+
+                return super().__new__(cls, unpacked[0])
+        
+        """
+        # Currently broken
+        
+        class ufloat32(float):
+            def __new__(cls, value=0.0):
+                if not isinstance(value, float):
+                    raise TypeError("ufloat32 value must be a float")
+
+                packed = struct.pack("f", value)
+                unpacked = struct.unpack("f", packed)
+
+                if value < 0.0 or unpacked[0] != value or value > 3.4028235e38:
+                    raise UBitError("ufloat32", 32)
+
+                return super().__new__(cls, unpacked[0])
+
+        class ufloat64(float):
+            def __new__(cls, value=0.0):
+                if not isinstance(value, float):
+                    raise TypeError("ufloat64 value must be a float")
+                
+                packed = struct.pack("d", value)
+                unpacked = struct.unpack("d", packed)
+
+                if value < 0.0 or unpacked[0] != value or value > 1.7976931348623157e308:
+                    raise UBitError("ufloat64", 64)
+
+                return super().__new__(cls, unpacked[0])
+        """
+            
+    class base10(decimal.Decimal):
+        def __new__(cls, value: float=0.0, context=None):
+            if context is None:
+                context = decimal.getcontext()
+            
+            return decimal.Decimal.__new__(cls, str(value), context=context)
+        
+        def __str__(self):
+            return str(self.normalize())
+        
+        def __repr__(self):
+            return repr(self.normalize())
+
+    class MutableStr:
+        def __init__(self, value=''):
+            self._value = list(value)
+        
+        def __str__(self):
+            return ''.join(self._value)
+        
+        def append(self, value):
+            self._value.append(value)
+
+        def insert(self, index, char):
+            self._value.insert(index, char)
+        
+        def remove(self, index):
+            if isinstance(index, str):
+                self._value = [c for c in self._value if c != index]
+            else:
+                del self._value[index]
+        
+        def reverse(self):
+            self._value.reverse()
+        
+        def upper(self):
+            self._value = [char.upper() for char in self._value]
+        
+        def lower(self):
+            self._value = [char.lower() for char in self._value]
+        
+        def title(self):
+            self._value = [char.upper() if i == 0 or self._value[i - 1].isspace() else char.lower() for i, char in enumerate(self._value)]
+        
+        def sentence(self):
+            self._value = [self._value[0].upper()] + [char.lower() for char in self._value[1:]]
+
+        def replace(self, old, new):
+            self._value = [new if c == old else c for c in self._value]
+
+    class GG2D:
+        class Game:
+            def __init__(self, width, height):
+                self.width = width
+                self.height = height
+                self.screen = turtle.Screen()
+                self.screen.setup(width, height)
+                self.screen.title("GG2D Engine")
+                self.sprites = []
+                self.collidables = []
+                self.controls = Pyrew.GG2D.Controls(self.screen)
+
+            def fps(self, num):
+                return 1 / num
+
+            def add_sprite(self, sprite):
+                self.sprites.append(sprite)
+
+            def add_collidable(self, collidable):
+                self.collidables.append(collidable)
+
+            def update(self):
+                for sprite in self.sprites:
+                    sprite.update()
+
+                self.check_collisions()
+
+            def check_collisions(self):
+                for collidable1 in self.collidables:
+                    for collidable2 in self.collidables:
+                        if collidable1 != collidable2 and collidable1.collides_with(collidable2):
+                            collidable1.handle_collision(collidable2)
+
+            def run(self):
+                loading_screen = Pyrew.GG2D.LoadingScreen(self.screen)
+                loading_screen.show()
+
+                self.draw_scene()
+
+                loading_screen.hide()
+
+                while True:
+                    self.screen.update()
+                    self.update()
+
+            def clear_screen(self):
+                self.screen.clear()
+
+            def draw_scene(self):
+                self.clear_screen()
+
+                self.draw_background("white")
+
+                for sprite in self.sprites:
+                    sprite.draw()
+
+                self.screen.update()
+                self.update()
+
+            def draw_background(self, color):
+                self.screen.bgcolor(color)
+
+        class Sprite:
+            def __init__(self, shape, color, x, y, size):
+                self.turtle = turtle.Turtle()
+                self.x = x
+                self.y = y
+                self.turtle.shape(shape)
+                self.turtle.color(color)
+                self.turtle.penup()
+                self.turtle.goto(x, y)
+                self.dx = 0
+                self.dy = 0
+                self.shape = shape
+                self.color = color
+                self.size = size
+
+            def update(self):
+                self.turtle.setx(self.turtle.xcor() + self.dx)
+                self.turtle.sety(self.turtle.ycor() + self.dy)
+
+            def collides_with(self, other):
+                return self.turtle.distance(other.turtle) < 20
+
+            def handle_collision(self, other):
+                pass
+
+            def draw(self):
+                turtle.hideturtle()
+                turtle.penup()
+                turtle.goto(self.x, self.y)
+                turtle.shapesize(self.size)
+                turtle.shape(self.shape)
+                turtle.color(self.color)
+                turtle.stamp()
+
+        class Controls:
+            def __init__(self, screen):
+                self.screen = screen
+                self.screen.listen()
+                self.screen.onkeypress(self.move_up, "Up")
+                self.screen.onkeypress(self.move_down, "Down")
+                self.screen.onkeypress(self.move_left, "Left")
+                self.screen.onkeypress(self.move_right, "Right")
+
+            def move_up(self):
+                # Handle up movement logic
+                pass
+
+            def move_down(self):
+                # Handle down movement logic
+                pass
+
+            def move_left(self):
+                # Handle left movement logic
+                pass
+
+            def move_right(self):
+                # Handle right movement logic
+                pass
+
+        class LoadingScreen:
+            def __init__(self, screen):
+                self.screen = screen
+                self.loading_turtle = turtle.Turtle()
+                self.loading_turtle.hideturtle()
+                self.loading_turtle.penup()
+                self.loading_turtle.goto(0, 0)
+
+            def show(self):
+                self.loading_turtle.write("Loading...", align="center", font=("Arial", 24, "normal"))
+
+            def hide(self):
+                self.loading_turtle.clear()
+                    
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
