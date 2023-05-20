@@ -39,6 +39,8 @@ import flask as fl
 import turtle
 import signal
 import urllib
+import pydub
+import pydub.playback
 import requests
 import decimal
 from tkhtmlview import HTMLLabel, RenderHTML
@@ -55,7 +57,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.23.0"
+__version__ = "0.23.1"
 
 
 """
@@ -83,7 +85,7 @@ def flatten(l: list):
     return flattened
 
 def __tree__(root, max_depth=None, exclude=None, indent='', legacy: bool=False):
-    if legacy:
+    if legacy == True:
         branch = "|---"
         final  = "|___"
 
@@ -111,7 +113,7 @@ def __tree__(root, max_depth=None, exclude=None, indent='', legacy: bool=False):
                 sub_indent = indent + '    ' if is_last else indent + '│   '
                 
                 if max_depth is None or len(sub_indent) // 4 < max_depth:
-                    __tree__(item_path, indent=sub_indent, max_depth=max_depth, exclude=exclude)
+                    __tree__(item_path, indent=sub_indent, max_depth=max_depth, exclude=exclude, legacy=legacy)
             else:
                 print(f"{indent}{final if is_last else branch} {item}")
     
@@ -1921,141 +1923,152 @@ class Pyrew:
         def replace(self, old, new):
             self._value = [new if c == old else c for c in self._value]
 
-    class GG2D:
-        class Game:
-            def __init__(self, width, height):
-                self.width = width
-                self.height = height
-                self.screen = turtle.Screen()
-                self.screen.setup(width, height)
-                self.screen.title("GG2D Engine")
-                self.sprites = []
-                self.collidables = []
-                self.controls = Pyrew.GG2D.Controls(self.screen)
+    """
+    class barium:
+        class Sound:
+            def __init__(self, filename: str):
+                self.filename = str(filename)
+                if filename.endswith('.wav'):
+                    self.sound = pydub.AudioSegment.from_wav(self.filename)
+                
+                elif filename.endswith('.mp3'):
+                    self.sound = pydub.AudioSegment.from_mp3(self.filename)
+                
+                elif filename.endswith('.ogg'):
+                    self.sound = pydub.AudioSegment.from_ogg(self.filename)
 
-            def fps(self, num):
-                return 1 / num
+            def play(self, volume=100, speed=1.0):
+                self.sound += volume
+                self.sound = self.sound.speedup(playback_speed=speed)
+                pydub.playback.play(self.sound)
+    """
 
-            def add_sprite(self, sprite):
-                self.sprites.append(sprite)
+    """
+    class unstable:
+        class GG2D:
+            class Game:
+                def __init__(self, width, height):
+                    self.width = width
+                    self.height = height
+                    self.screen = turtle.Screen()
+                    self.screen.setup(width, height)
+                    self.screen.title("GG2D Engine")
+                    self.sprites = []
+                    self.collidables = []
 
-            def add_collidable(self, collidable):
-                self.collidables.append(collidable)
+                def add_sprite(self, sprite):
+                    self.sprites.append(sprite)
 
-            def update(self):
-                for sprite in self.sprites:
-                    sprite.update()
+                def add_collidable(self, collidable):
+                    self.collidables.append(collidable)
 
-                self.check_collisions()
+                def update(self):
+                    for sprite in self.sprites:
+                        sprite.update()
 
-            def check_collisions(self):
-                for collidable1 in self.collidables:
-                    for collidable2 in self.collidables:
-                        if collidable1 != collidable2 and collidable1.collides_with(collidable2):
-                            collidable1.handle_collision(collidable2)
+                    self.check_collisions()
 
-            def run(self):
-                loading_screen = Pyrew.GG2D.LoadingScreen(self.screen)
-                loading_screen.show()
+                def check_collisions(self):
+                    for collidable1 in self.collidables:
+                        for collidable2 in self.collidables:
+                            if collidable1 != collidable2 and collidable1.collides_with(collidable2):
+                                collidable1.handle_collision(collidable2)
 
-                self.draw_scene()
+                def run(self):
+                    loading_screen = Pyrew.unstable.GG2D.LoadingScreen(self.screen)
+                    loading_screen.show()
 
-                loading_screen.hide()
+                    self.draw_scene()
 
-                while True:
+                    loading_screen.hide()
+
+                def clear_screen(self):
+                    self.screen.clear()
+
+                def draw_scene(self):
+                    self.clear_screen()
+
+                    self.draw_background("white")
+
+                    for sprite in self.sprites:
+                        sprite.draw()
+
                     self.screen.update()
                     self.update()
 
-            def clear_screen(self):
-                self.screen.clear()
+                def draw_background(self, color):
+                    self.screen.bgcolor(color)
 
-            def draw_scene(self):
-                self.clear_screen()
+                def bind(self, key, sprite, method):
+                    self.screen.onkeypress(lambda: method(sprite), key)
 
-                self.draw_background("white")
+                def fps(self, n):
+                    return 1/n
 
-                for sprite in self.sprites:
-                    sprite.draw()
+            class Sprite:
+                def __init__(self, shape, color, x, y, size):
+                    self.turtle = turtle.Turtle()
+                    self.x = x
+                    self.y = y
+                    self.turtle.shape(shape)
+                    self.turtle.color(color)
+                    self.turtle.penup()
+                    self.turtle.goto(x, y)
+                    self.dx = 0
+                    self.dy = 0
+                    self.shape = shape
+                    self.color = color
+                    self.size = size
 
-                self.screen.update()
-                self.update()
+                def update(self):
+                    self.turtle.setx(self.turtle.xcor() + self.dx)
+                    self.turtle.sety(self.turtle.ycor() + self.dy)
 
-            def draw_background(self, color):
-                self.screen.bgcolor(color)
+                def collides_with(self, other):
+                    return self.turtle.distance(other.turtle) < 20
 
-        class Sprite:
-            def __init__(self, shape, color, x, y, size):
-                self.turtle = turtle.Turtle()
-                self.x = x
-                self.y = y
-                self.turtle.shape(shape)
-                self.turtle.color(color)
-                self.turtle.penup()
-                self.turtle.goto(x, y)
-                self.dx = 0
-                self.dy = 0
-                self.shape = shape
-                self.color = color
-                self.size = size
+                def handle_collision(self, other):
+                    pass
 
-            def update(self):
-                self.turtle.setx(self.turtle.xcor() + self.dx)
-                self.turtle.sety(self.turtle.ycor() + self.dy)
+                def draw(self):
+                    turtle.hideturtle()
+                    turtle.penup()
+                    turtle.goto(self.x, self.y)
+                    turtle.shapesize(self.size)
+                    turtle.shape(self.shape)
+                    turtle.color(self.color)
+                    turtle.stamp()
 
-            def collides_with(self, other):
-                return self.turtle.distance(other.turtle) < 20
+            class PlayerSprite(Sprite):
+                def __init__(self, shape, color, x, y, size):
+                    super().__init__(shape, color, x, y, size)
 
-            def handle_collision(self, other):
-                pass
+                def up(self):
+                    self.turtle.sety(self.turtle.ycor() + 10)
 
-            def draw(self):
-                turtle.hideturtle()
-                turtle.penup()
-                turtle.goto(self.x, self.y)
-                turtle.shapesize(self.size)
-                turtle.shape(self.shape)
-                turtle.color(self.color)
-                turtle.stamp()
+                def down(self):
+                    self.turtle.sety(self.turtle.ycor() - 10)
 
-        class Controls:
-            def __init__(self, screen):
-                self.screen = screen
-                self.screen.listen()
-                self.screen.onkeypress(self.move_up, "Up")
-                self.screen.onkeypress(self.move_down, "Down")
-                self.screen.onkeypress(self.move_left, "Left")
-                self.screen.onkeypress(self.move_right, "Right")
+                def left(self):
+                    self.turtle.setx(self.turtle.xcor() - 10)
 
-            def move_up(self):
-                # Handle up movement logic
-                pass
+                def right(self):
+                    self.turtle.setx(self.turtle.xcor() + 10)
 
-            def move_down(self):
-                # Handle down movement logic
-                pass
+            class LoadingScreen:
+                def __init__(self, screen):
+                    self.screen = screen
+                    self.loading_turtle = turtle.Turtle()
+                    self.loading_turtle.hideturtle()
+                    self.loading_turtle.penup()
+                    self.loading_turtle.goto(0, 0)
 
-            def move_left(self):
-                # Handle left movement logic
-                pass
+                def show(self):
+                    self.loading_turtle.write("Loading...", align="center", font=("Arial", 24, "normal"))
 
-            def move_right(self):
-                # Handle right movement logic
-                pass
-
-        class LoadingScreen:
-            def __init__(self, screen):
-                self.screen = screen
-                self.loading_turtle = turtle.Turtle()
-                self.loading_turtle.hideturtle()
-                self.loading_turtle.penup()
-                self.loading_turtle.goto(0, 0)
-
-            def show(self):
-                self.loading_turtle.write("Loading...", align="center", font=("Arial", 24, "normal"))
-
-            def hide(self):
-                self.loading_turtle.clear()
-                    
+                def hide(self):
+                    self.loading_turtle.clear()
+    """
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
