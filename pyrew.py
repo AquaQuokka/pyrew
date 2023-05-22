@@ -27,6 +27,7 @@ import functools
 import typing
 import tkinter as tk
 import http.server
+import socket
 import socketserver
 import webbrowser
 import inspect
@@ -39,8 +40,6 @@ import flask as fl
 import turtle
 import signal
 import urllib
-import pydub
-import pydub.playback
 import requests
 import decimal
 from tkhtmlview import HTMLLabel, RenderHTML
@@ -57,7 +56,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.23.1"
+__version__ = "0.23.2"
 
 
 """
@@ -1922,6 +1921,19 @@ class Pyrew:
 
         def replace(self, old, new):
             self._value = [new if c == old else c for c in self._value]
+
+    class IP:
+        def __init__(self, hostname=None):
+            self.hostname = hostname
+
+        def fetch(self, hostname=None):
+            if hostname is not None:
+                ip_address = socket.gethostbyname(hostname)
+            
+            else:
+                ip_address = socket.gethostbyname(self.hostname)
+
+            return ip_address
 
     """
     class barium:

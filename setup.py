@@ -20,5 +20,5 @@ setup(
     license='BSD-3-Clause',
     py_modules=['pyrew'],
     scripts=['pyrew.py'],
-    install_requires=["humanize", "pillow", "flask", "requests", "jinja2", "pydub"],
+    install_requires=["humanize", "pillow", "flask", "requests", "jinja2"],
 )
