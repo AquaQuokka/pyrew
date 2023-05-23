@@ -96,11 +96,11 @@ tpc.lift()
 tpc.freeze()
 ```
 
-## Pyrew WinDLL Documentation
+## Pyrew Windows Documentation
 
-Pyrew has a built-in module for using WinDLL.
+Pyrew has a built-in module for using Windows features.
 
-Here's an example of how to make a simple message box using Pyrew's WinDLL module:
+Here's an example of how to make a simple message box using Pyrew's Windows WinDLL module:
 
 ```py
 import pyrew
@@ -109,6 +109,19 @@ pyrew = pyrew.Pyrew()
 
 mb = pyrew.Windows.WinDLL.MessageBox("My Message Box", "Hello, world!", ["OK", "INFO", "TOPMOST"])
 mb.show()
+```
+
+Here's an example of how to execute a Python program with elevation:
+
+```py
+import pyrew
+
+pyrew = pyrew.Pyrew()
+
+with pyrew.Windows.elevate() as e:
+    e("""
+print("Hello, world!")
+    """).run()
 ```
 
 ## Pyrew Threading Documentation

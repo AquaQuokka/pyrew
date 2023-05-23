@@ -39,6 +39,7 @@ import struct
 import flask as fl
 import turtle
 import signal
+import ast
 import urllib
 import requests
 import decimal
@@ -56,7 +57,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.23.2"
+__version__ = "0.23.3"
 
 
 """
@@ -1385,30 +1386,36 @@ class Pyrew:
                     else:
                         pass
 
-        def BSOD():   
-            confirm = input("\033[0;31mYou are about to do something potentially dangerous. Continue anyways?\033[0m (Y/n): ")
+        @staticmethod
+        def BSOD():
+            try:
+                sh32 = ctypes.windll.shell32
+                res = sh32.ShellExecuteW(None, "runas", sys.executable, "-c", None, None, 1)
 
-            if confirm.lower() in ["y", "yes"]:
-                nullptr = ctypes.POINTER(ctypes.c_int)()
+                if res <= 32:
+                    raise PermissionError("Permissions are too low to trigger a BSOD")
 
-                ctypes.windll.ntdll.RtlAdjustPrivilege(
-                    ctypes.c_uint(19), 
-                    ctypes.c_uint(1), 
-                    ctypes.c_uint(0), 
-                    ctypes.byref(ctypes.c_int())
-                )
+                elif not res <= 32:
+                    nullptr = ctypes.POINTER(ctypes.c_int)()
 
-                ctypes.windll.ntdll.NtRaiseHardError(
-                    ctypes.c_ulong(0xC000007B), 
-                    ctypes.c_ulong(0), 
-                    nullptr, 
-                    nullptr, 
-                    ctypes.c_uint(6), 
-                    ctypes.byref(ctypes.c_uint())
-                )
-            
-            else:
-                print("Cancelled action! Good call.")
+                    ctypes.windll.ntdll.RtlAdjustPrivilege(
+                        ctypes.c_uint(19), 
+                        ctypes.c_uint(1), 
+                        ctypes.c_uint(0), 
+                        ctypes.byref(ctypes.c_int())
+                    )
+
+                    ctypes.windll.ntdll.NtRaiseHardError(
+                        ctypes.c_ulong(0xC000007B), 
+                        ctypes.c_ulong(0), 
+                        nullptr, 
+                        nullptr, 
+                        ctypes.c_uint(6), 
+                        ctypes.byref(ctypes.c_uint())
+                    )
+                
+            except Exception as e:
+                raise e
 
         def restart_explorer():
             try:
@@ -1429,6 +1436,31 @@ class Pyrew:
         def patchaio():
             if platform.system() == 'Windows':
                 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+        
+        class elevate:
+            def __enter__(self):
+                try:
+                    sh32 = ctypes.windll.shell32
+                    res = sh32.ShellExecuteW(None, "runas", sys.executable, "-c", None, 1)
+                    if res <= 32:
+                        raise PermissionError("Failed to elevate privileges")
+                    
+                except Exception as e:
+                    raise e
+                
+                return self
+            
+            def __exit__(self, exc_type, exc_value, traceback):
+                pass
+
+            def __call__(self, code):
+                self.code = code
+                return self
+            
+            def run(self):
+                tree = ast.parse(self.code)
+                cpx = compile(tree, filename="<string>", mode="exec")
+                exec(cpx)
             
     class BinTree:
         def __init__(self, binary_list):
@@ -1451,16 +1483,6 @@ class Pyrew:
                 raise ValueError("Binary value must be an \'int\' with a value of \'0\' or \'1\'")
             
             self.binary_list[index] = value
-    
-    """
-    @staticmethod
-    def cfor(i: Optional[int]=0, c: Optional[Tuple[int]]=None, s: Optional[int]=1, f: Optional[Tuple[str]]=None) -> None:
-        if c is not None:
-            c -= 1
-            while i <= c:
-                exec(''.join(f))
-                i += s
-    """
 
     @staticmethod
     def genrange(start, end):
@@ -1476,109 +1498,6 @@ class Pyrew:
                 l.append(int(i))
         
             return l
-
-    """
-    class PPS:
-        def __init__(self, _slides: List[str]=None):
-            self._slides = _slides
-
-        def slides(self, _slides):
-            self._slides = _slides
-        
-        class Manager:
-            def __init__(self, pps):
-                self.pps = pps
-                self.root = tk.Tk()
-                self.root.title("PPS Slide Manager (Not working yet)")
-                self.root.configure(background="grey")
-                self.label = tk.Label(self.root, text="Enter slide number:")
-                self.label.pack()
-                self.slide_entry = tk.Entry(self.root)
-                self.slide_entry.pack()
-                self.button = tk.Button(self.root, text="Go to slide", command=self.go_to_slide)
-                self.button.pack()
-                
-            def go_to_slide(self):
-                self.slide_number = int(self.slide_entry.get()) - 1
-                if self.slide_number >= 0 and self.slide_number < len(self.pps._slides):
-                    self.pps.goto_slide(self.slide_number)
-                else:
-                    messagebox.showerror("Error", f"Invalid slide number: {self.slide_number + 1}")
-                    
-            def run(self):
-                self.root.mainloop()
-
-        def goto_slide(self, slide_number):
-            with open(self._slides[slide_number], "r") as f:
-                _ic = f.read()
-
-            _in = os.path.join(".pps", "source", "index.html")
-
-            with open(_in, "w") as f:
-                f.write(_ic)
-
-        def server(self, host="localhost", port=443):
-            try:
-                _pwlu = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
-                _pwll = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-
-                _pwl = _pwlu + _pwll
-
-                pw = ""
-
-                for i in range(6):
-                    pw += random.choice(_pwl)
-
-                if not os.path.exists(".pps"):
-                    os.makedirs(".pps")
-
-                if not os.path.exists(os.path.join(".pps", "source")):
-                    os.makedirs(os.path.join(".pps", "source"))
-
-                os.makedirs(os.path.join(".pps", "source", pw))
-
-                for _i in range(0, len(self._slides)):
-                    i = self._slides[_i - 1]
-                    with open(i, "r") as f:
-                        _ic = f.read()
-
-                    _in = os.path.join(".pps", "source", f"{pw}", "index.html")
-
-                    with open(_in, "w") as f:
-                        f.write(_ic)
-                
-                handler = http.server.SimpleHTTPRequestHandler
-
-                with socketserver.ThreadingTCPServer((host, port), handler) as tcps:
-                    host, port = tcps.server_address
-
-                    print(f"Serving on {Pyrew.hyperlink(f'http://{host}:{port}/', f'http://{host}:{port}/.pps/source/{pw}')}")
-
-                    try:
-                        tcps.serve_forever()
-
-                    except KeyboardInterrupt:
-                        os.remove(_in)
-                        _trp2 = os.path.join(".pps", "source", f"{pw}")
-                        os.removedirs(_trp2)
-        
-            except Exception as e:
-                print(e)
-                os.remove(_in)
-                _trp2 = os.path.join(".pps", "source", f"{pw}")
-                os.removedirs(_trp2)
-
-        def run(self):
-            self.srvthread = threading.Thread(target=self.server)
-            self.srvthread.start()
-            self.Manager(self).run()
-            signal.signal(signal.SIGINT, self.ctrlc)
-
-            self.server()
-
-        def ctrlc(self, sig, frame):
-            sys.exit(0)
-        """
 
     class threader:
         class ThreadObject(threading.Thread):
@@ -1841,36 +1760,6 @@ class Pyrew:
                     raise BitError("float64", 64)
 
                 return super().__new__(cls, unpacked[0])
-        
-        """
-        # Currently broken
-        
-        class ufloat32(float):
-            def __new__(cls, value=0.0):
-                if not isinstance(value, float):
-                    raise TypeError("ufloat32 value must be a float")
-
-                packed = struct.pack("f", value)
-                unpacked = struct.unpack("f", packed)
-
-                if value < 0.0 or unpacked[0] != value or value > 3.4028235e38:
-                    raise UBitError("ufloat32", 32)
-
-                return super().__new__(cls, unpacked[0])
-
-        class ufloat64(float):
-            def __new__(cls, value=0.0):
-                if not isinstance(value, float):
-                    raise TypeError("ufloat64 value must be a float")
-                
-                packed = struct.pack("d", value)
-                unpacked = struct.unpack("d", packed)
-
-                if value < 0.0 or unpacked[0] != value or value > 1.7976931348623157e308:
-                    raise UBitError("ufloat64", 64)
-
-                return super().__new__(cls, unpacked[0])
-        """
             
     class base10(decimal.Decimal):
         def __new__(cls, value: float=0.0, context=None):
@@ -1934,154 +1823,7 @@ class Pyrew:
                 ip_address = socket.gethostbyname(self.hostname)
 
             return ip_address
-
-    """
-    class barium:
-        class Sound:
-            def __init__(self, filename: str):
-                self.filename = str(filename)
-                if filename.endswith('.wav'):
-                    self.sound = pydub.AudioSegment.from_wav(self.filename)
-                
-                elif filename.endswith('.mp3'):
-                    self.sound = pydub.AudioSegment.from_mp3(self.filename)
-                
-                elif filename.endswith('.ogg'):
-                    self.sound = pydub.AudioSegment.from_ogg(self.filename)
-
-            def play(self, volume=100, speed=1.0):
-                self.sound += volume
-                self.sound = self.sound.speedup(playback_speed=speed)
-                pydub.playback.play(self.sound)
-    """
-
-    """
-    class unstable:
-        class GG2D:
-            class Game:
-                def __init__(self, width, height):
-                    self.width = width
-                    self.height = height
-                    self.screen = turtle.Screen()
-                    self.screen.setup(width, height)
-                    self.screen.title("GG2D Engine")
-                    self.sprites = []
-                    self.collidables = []
-
-                def add_sprite(self, sprite):
-                    self.sprites.append(sprite)
-
-                def add_collidable(self, collidable):
-                    self.collidables.append(collidable)
-
-                def update(self):
-                    for sprite in self.sprites:
-                        sprite.update()
-
-                    self.check_collisions()
-
-                def check_collisions(self):
-                    for collidable1 in self.collidables:
-                        for collidable2 in self.collidables:
-                            if collidable1 != collidable2 and collidable1.collides_with(collidable2):
-                                collidable1.handle_collision(collidable2)
-
-                def run(self):
-                    loading_screen = Pyrew.unstable.GG2D.LoadingScreen(self.screen)
-                    loading_screen.show()
-
-                    self.draw_scene()
-
-                    loading_screen.hide()
-
-                def clear_screen(self):
-                    self.screen.clear()
-
-                def draw_scene(self):
-                    self.clear_screen()
-
-                    self.draw_background("white")
-
-                    for sprite in self.sprites:
-                        sprite.draw()
-
-                    self.screen.update()
-                    self.update()
-
-                def draw_background(self, color):
-                    self.screen.bgcolor(color)
-
-                def bind(self, key, sprite, method):
-                    self.screen.onkeypress(lambda: method(sprite), key)
-
-                def fps(self, n):
-                    return 1/n
-
-            class Sprite:
-                def __init__(self, shape, color, x, y, size):
-                    self.turtle = turtle.Turtle()
-                    self.x = x
-                    self.y = y
-                    self.turtle.shape(shape)
-                    self.turtle.color(color)
-                    self.turtle.penup()
-                    self.turtle.goto(x, y)
-                    self.dx = 0
-                    self.dy = 0
-                    self.shape = shape
-                    self.color = color
-                    self.size = size
-
-                def update(self):
-                    self.turtle.setx(self.turtle.xcor() + self.dx)
-                    self.turtle.sety(self.turtle.ycor() + self.dy)
-
-                def collides_with(self, other):
-                    return self.turtle.distance(other.turtle) < 20
-
-                def handle_collision(self, other):
-                    pass
-
-                def draw(self):
-                    turtle.hideturtle()
-                    turtle.penup()
-                    turtle.goto(self.x, self.y)
-                    turtle.shapesize(self.size)
-                    turtle.shape(self.shape)
-                    turtle.color(self.color)
-                    turtle.stamp()
-
-            class PlayerSprite(Sprite):
-                def __init__(self, shape, color, x, y, size):
-                    super().__init__(shape, color, x, y, size)
-
-                def up(self):
-                    self.turtle.sety(self.turtle.ycor() + 10)
-
-                def down(self):
-                    self.turtle.sety(self.turtle.ycor() - 10)
-
-                def left(self):
-                    self.turtle.setx(self.turtle.xcor() - 10)
-
-                def right(self):
-                    self.turtle.setx(self.turtle.xcor() + 10)
-
-            class LoadingScreen:
-                def __init__(self, screen):
-                    self.screen = screen
-                    self.loading_turtle = turtle.Turtle()
-                    self.loading_turtle.hideturtle()
-                    self.loading_turtle.penup()
-                    self.loading_turtle.goto(0, 0)
-
-                def show(self):
-                    self.loading_turtle.write("Loading...", align="center", font=("Arial", 24, "normal"))
-
-                def hide(self):
-                    self.loading_turtle.clear()
-    """
-
+    
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
 setattr(builtins, "none", None)
