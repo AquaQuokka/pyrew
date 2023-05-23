@@ -15,6 +15,7 @@ import numpy as np
 import cv2 as cv
 import string
 import random
+import pyautogui as pag
 import bisect
 import subprocess
 import pip
@@ -1869,6 +1870,31 @@ class Pyrew:
             @staticmethod
             def gray(image_path, factor: float=0.4):
                 return Pyrew.asciify.image.grey(image_path=image_path, factor=factor)
+    
+    class coutpen:
+        def __init__(self):
+            self.lines = []
+            self.cline = []
+            self.cchar = ' '
+
+        def shift(self, char):
+            self.cchar = char
+
+        def strafe(self, distance):
+            self.cline.extend([self.cchar] * distance)
+
+        def newline(self):
+            self.lines.append(self.cline)
+            self.cline = []
+
+        def goto(self, x):
+            schar = self.cchar
+            self.cchar = ' '
+            self.cline.extend([self.cchar] * x)
+            self.cchar = schar
+        
+        def __str__(self):
+            return '\n'.join([''.join(line) for line in self.lines])
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)

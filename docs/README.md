@@ -257,3 +257,41 @@ if __name__ == '__main__':
     pyrew.fluid.host(app)
 ```
 
+## Pyrew Coutpen Documentation
+
+Pyrew has a built-in module for drawing things in the console.
+
+Here is an example of how to use `coutpen` to make a square:
+
+```py
+import pyrew
+
+pyrew = pyrew.Pyrew()
+
+cop = pyrew.coutpen()
+
+cop.shift('.')              # Switch to the '.' character.
+cop.strafe(1)               # Strafe-draw the character for 1 character.
+cop.shift("-")              # Switch to the '-' character.
+cop.strafe(10)              # Strafe-draw the character for 10 characters.
+cop.shift('.')              # Switch to the '.' character.
+cop.strafe(1)               # Strafe-draw the character for 1 character.
+cop.newline()               # Create a new line and move to it.
+cop.shift("|")              # Switch to the '|' character.
+
+for i in range(4):
+    cop.strafe(1)           # Strafe-draw the character for 1 character.
+    cop.goto(10)            # Stop drawing, move forward 10 characters, and continue drawing.
+    cop.strafe(1)           # Strafe-draw the character for 1 character.
+    cop.newline()           # Create a new line and move to it.
+
+cop.shift('\'')             # Switch to the ''' character.
+cop.strafe(1)               # Strafe-draw the character for 1 character.
+cop.shift("-")              # Switch to to the '-' character.
+cop.strafe(10)              # Strafe-draw the character for 10 characters.
+cop.shift('\'')             # Switch to the ''' character.
+cop.strafe(1)               # Strafe-draw the character for 1 character.
+cop.newline()               # Create a new line and move to it.
+
+print(cop)                  # Print the string representation of the 'cop' instance of the 'coutpen' object from the __str__ dunder method.
+```
