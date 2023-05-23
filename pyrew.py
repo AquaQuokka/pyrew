@@ -61,7 +61,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.24.0.1"
+__version__ = "0.24.1"
 
 
 """
@@ -1895,6 +1895,81 @@ class Pyrew:
         
         def __str__(self):
             return '\n'.join([''.join(line) for line in self.lines])
+    
+    class ansi:
+        def __init__(self, text: str, formats: Tuple[str]=(None)):
+            self.text = text
+            self.formats = formats
+
+        def __call__(self):
+            return self.process(self.text, self.formats)
+        
+        def process(self, text, formats):
+            if formats != (None):
+                afmts = ';'.join(formats)
+
+                afmts = afmts.replace("bold","1")
+                afmts = afmts.replace("reset", "0")
+
+                afmts = afmts.replace("light_black_bg", "40;1")
+                afmts = afmts.replace("gray_bg", "40;1")
+                afmts = afmts.replace("grey_bg", "40;1")
+
+                afmts = afmts.replace("light_red_bg","41;1")
+
+                afmts = afmts.replace("lime_green_bg","42;1")
+                afmts = afmts.replace("lime_bg","42;1")
+                afmts = afmts.replace("light_green_bg","42;1")
+
+                afmts = afmts.replace("light_yellow_bg", "43;1")
+                afmts = afmts.replace("light_blue_bg","44;1")
+                afmts = afmts.replace("light_magenta_bg","45;1")
+                afmts = afmts.replace("light_cyan_bg","46;1")
+                afmts = afmts.replace("light_white_bg","47;1")
+
+                afmts = afmts.replace("light_black", "30;1")
+                afmts = afmts.replace("gray", "30;1")
+                afmts = afmts.replace("grey", "30;1")
+
+                afmts = afmts.replace("light_red", "31;1")
+
+                afmts = afmts.replace("light_green", "32;1")
+                afmts = afmts.replace("lime_green", "32;1")
+                afmts = afmts.replace("lime", "32;1")
+
+                afmts = afmts.replace("light_yellow", "33;1")
+                afmts = afmts.replace("light_blue", "34;1")
+                afmts = afmts.replace("light_magenta", "35;1")
+                afmts = afmts.replace("light_cyan", "36;1")
+                afmts = afmts.replace("light_white", "37;1")
+
+
+                afmts = afmts.replace("black_bg", "40")
+                afmts = afmts.replace("red_bg","41")
+                afmts = afmts.replace("green_bg","42")
+                afmts = afmts.replace("yellow_bg", "43")
+                afmts = afmts.replace("blue_bg","44")
+                afmts = afmts.replace("magenta_bg","45")
+                afmts = afmts.replace("cyan_bg","46")
+                afmts = afmts.replace("white_bg","47")
+
+
+                afmts = afmts.replace("black", "30")
+                afmts = afmts.replace("red", "31")
+                afmts = afmts.replace("green", "32")
+                afmts = afmts.replace("yellow", "33")
+                afmts = afmts.replace("blue", "34")
+                afmts = afmts.replace("magenta", "35")
+                afmts = afmts.replace("cyan", "36")
+                afmts = afmts.replace("white", "37")
+
+                afmts = afmts.replace("underline","4")
+                afmts = afmts.replace("reverse","7")
+
+                return f"\u001b[{afmts}m{text}\u001b[0m"
+
+            else:
+                return f"{text}"
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
