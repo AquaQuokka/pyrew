@@ -61,7 +61,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.24.1"
+__version__ = "0.24.1.1"
 
 
 """
@@ -1831,7 +1831,6 @@ class Pyrew:
     class asciify:
         @staticmethod
         def text(text, font: str=None):
-            t = text.replace(" ", "  ")
             if font is not None:
                 ascii_art = art.text2art(text=t, font=font)
             
