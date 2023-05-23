@@ -111,6 +111,7 @@ mb = pyrew.Windows.WinDLL.MessageBox("My Message Box", "Hello, world!", ["OK", "
 mb.show()
 ```
 
+
 Here's an example of how to execute a Python program with elevation:
 
 ```py
@@ -295,3 +296,40 @@ cop.newline()               # Create a new line and move to it.
 
 print(cop)                  # Print the string representation of the 'cop' instance of the 'coutpen' object from the __str__ dunder method.
 ```
+
+
+Here is an example of how to use `coutpen` to make a triangle:
+
+```py
+import pyrew
+
+pyrew = pyrew.Pyrew()
+
+cop = pyrew.coutpen()
+
+cop.shift('/')
+cop.goto(3)
+cop.strafe(1)
+cop.shift('\\')
+cop.strafe(1)
+cop.newline()
+cop.shift('/')
+cop.goto(2)
+cop.strafe(1)
+cop.shift('\\')
+cop.goto(2)
+cop.strafe(1)
+cop.newline()
+cop.goto(1)
+cop.shift('/')
+cop.strafe(1)
+cop.shift('_')
+cop.strafe(4)
+cop.shift('\\')
+cop.strafe(1)
+cop.newline()
+
+print(cop)
+```
+
+# End of Documentation
