@@ -61,7 +61,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.24.1.1"
+__version__ = "0.24.1.2"
 
 
 """
@@ -1832,10 +1832,10 @@ class Pyrew:
         @staticmethod
         def text(text, font: str=None):
             if font is not None:
-                ascii_art = art.text2art(text=t, font=font)
+                ascii_art = art.text2art(text=text, font=font)
             
             else:
-                ascii_art = art.text2art(text=t)
+                ascii_art = art.text2art(text=text)
 
             return ascii_art
         
