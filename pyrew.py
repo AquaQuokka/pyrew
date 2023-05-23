@@ -61,7 +61,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.24.1.2"
+__version__ = "0.24.1.3"
 
 
 """
@@ -1839,36 +1839,31 @@ class Pyrew:
 
             return ascii_art
         
-        class image:
-            @staticmethod
-            def grey(image_path, factor: float=0.4):
-                img = cv.imread(image_path)
-                gscl = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+        @staticmethod
+        def image(image_path, factor: float=0.4):
+            img = cv.imread(image_path)
+            gscl = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
-                chars = '░▒▓█ '
+            chars = '░▒▓█ '
 
-                rat = gscl.shape[1] / gscl.shape[0]
-                scfact = factor
+            rat = gscl.shape[1] / gscl.shape[0]
+            scfact = factor
 
-                wi = int(gscl.shape[1] * scfact)
-                hi = int(wi / rat * scfact)
+            wi = int(gscl.shape[1] * scfact)
+            hi = int(wi / rat * scfact)
 
-                rsz = cv.resize(gscl, (wi, hi))
+            rsz = cv.resize(gscl, (wi, hi))
 
-                ascii_art = ""
+            ascii_art = ""
 
-                for row in rsz:
-                    for px in row:
-                        aidx = int(px / 255 * (len(chars) - 1))
-                        ascii_art += chars[aidx]
+            for row in rsz:
+                for px in row:
+                    aidx = int(px / 255 * (len(chars) - 1))
+                    ascii_art += chars[aidx]
 
-                    ascii_art += "\n"
+                ascii_art += "\n"
 
-                return ascii_art
-            
-            @staticmethod
-            def gray(image_path, factor: float=0.4):
-                return Pyrew.asciify.image.grey(image_path=image_path, factor=factor)
+            return ascii_art
     
     class coutpen:
         def __init__(self):
