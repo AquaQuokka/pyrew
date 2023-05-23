@@ -11,6 +11,8 @@ import threading
 import re
 import humanize
 import math
+import numpy as np
+import cv2 as cv
 import string
 import random
 import bisect
@@ -39,6 +41,7 @@ import struct
 import flask as fl
 import turtle
 import signal
+import art
 import ast
 import urllib
 import requests
@@ -57,7 +60,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.23.3"
+__version__ = "0.24.0"
 
 
 """
@@ -1824,6 +1827,49 @@ class Pyrew:
 
             return ip_address
     
+    class asciify:
+        @staticmethod
+        def text(text, font: str=None):
+            t = text.replace(" ", "  ")
+            if font is not None:
+                ascii_art = art.text2art(text=t, font=font)
+            
+            else:
+                ascii_art = art.text2art(text=t)
+
+            return ascii_art
+        
+        class image:
+            @staticmethod
+            def grey(image_path, factor: float=0.4):
+                img = cv.imread(image_path)
+                gscl = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+
+                chars = '░▒▓█ '
+
+                rat = gscl.shape[1] / gscl.shape[0]
+                scfact = factor
+
+                wi = int(gscl.shape[1] * scfact)
+                hi = int(wi / rat * scfact)
+
+                rsz = cv.resize(gscl, (wi, hi))
+
+                ascii_art = ""
+
+                for row in rsz:
+                    for px in row:
+                        aidx = int(px / 255 * (len(chars) - 1))
+                        ascii_art += chars[aidx]
+
+                    ascii_art += "\n"
+
+                return ascii_art
+            
+            @staticmethod
+            def gray(image_path, factor: float=0.4):
+                return Pyrew.asciify.image.grey(image_path=image_path, factor=factor)
+
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
 setattr(builtins, "none", None)
