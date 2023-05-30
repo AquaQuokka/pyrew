@@ -49,7 +49,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.24.2"
+__version__ = "0.24.2.1"
 
 
 """
@@ -1971,8 +1971,8 @@ class Pyrew:
             return f"{self.__class__.__name__}({self._keys})"
         
     @staticmethod
-    def xstr(input_str: str, keys: List[str]) -> bool:
-        return input_str in keys
+    def xstr(input_str: str, *keys: str) -> bool:
+        return input_str in [k for k in keys]
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
