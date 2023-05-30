@@ -332,4 +332,28 @@ cop.newline()
 print(cop)
 ```
 
+## Pyrew Enum Documentation
+
+Pyrew has a built-in class called `Pyrew.Enum` which is used to create enumerator types, which ensure a little bit of type safety.
+
+Here is an example of a slightly more type-safe enumerator function:
+
+```py
+import pyrew
+
+pyrew = pyrew.Pyrew()
+
+Fruit = pyrew.Enum("apple", "banana", "orange")
+
+def getfruit(fruit) -> str:
+    def wrapper(_fruit: Fruit(fruit)) -> str:
+        return _fruit
+    
+    return wrapper(fruit)
+    
+print(getfruit("apple"))
+print(getfruit("orange"))
+print(getfruit("grape")) # Raises an EnumError
+```
+
 # End of Documentation

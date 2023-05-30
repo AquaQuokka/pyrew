@@ -49,7 +49,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.24.1.5"
+__version__ = "0.24.2"
 
 
 """
@@ -151,6 +151,11 @@ class UBitError(ValueError):
     def __init__(self, tp: str, lim: int):
         self.lim = str(lim)
         super().__init__(f"{tp!r} value exceeds {self.lim}-bit bit constraints or is a negative number")
+
+class EnumError(ValueError):
+    def __init__(self, value):
+        self.value = value
+        super().__init__(f"Invalid Enum key for set {self.value!r}")
 
 """
 class HTMLViewFilenameError(FileExistsError):
@@ -1583,10 +1588,9 @@ class Pyrew:
 
     class flask:
         def render(path, *v: list):
-            cfd = os.path.join(os.path.dirname(os.path.abspath(__file__)), path)
-            cwd = os.path.join(os.getcwd(), path)
+            cfdf = os.path.join(os.path.dirname(os.path.abspath(__file__)), path)
 
-            with open(cfd, 'r') as f:
+            with open(cfdf, 'r') as f:
                 template = str(f.read())
 
             try:
@@ -1952,6 +1956,23 @@ class Pyrew:
 
             else:
                 return f"{text}"
+            
+    class Enum:
+        def __init__(self, *keys):
+            self._keys = set(keys)
+        
+        def __call__(self, value):
+            if value not in self._keys:
+                raise EnumError(value)
+            
+            return value
+        
+        def __repr__(self):
+            return f"{self.__class__.__name__}({self._keys})"
+        
+    @staticmethod
+    def xstr(input_str: str, keys: List[str]) -> bool:
+        return input_str in keys
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
