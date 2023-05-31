@@ -388,4 +388,37 @@ def my_func():
 my_func()
 ```
 
+
+## Pyrew Encryption Documentation
+
+Pyrew has a built-in module for cryptography, located at `Pyrew.encryption`.
+
+Here is an example of the `Pyrew.encryption` module in action:
+
+```py
+import pyrew
+
+pyrew = pyrew.Pyrew()
+
+seed = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+num = 100
+rounds = 10
+data = "Hello, world!"
+
+keys = pyrew.encryption.germinate(seed, num, rounds)
+
+encrypted = pyrew.encryption.encrypt(data, keys)
+print(encrypted)
+
+decrypted = pyrew.encryption.decrypt(encrypted, keys)
+print(decrypted)
+```
+
+The output of this will be:
+
+```
+@ÜÉQ=/↕÷©‼Ï!
+Hello, world!
+```
+
 # End of Documentation
