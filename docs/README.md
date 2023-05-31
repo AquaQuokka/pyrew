@@ -356,4 +356,36 @@ print(getfruit("orange"))
 print(getfruit("grape")) # Raises an EnumError
 ```
 
+
+## Pyrew Deco Documentation
+
+Pyrew has a built-in type for creating decorators, called `Pyrew.Deco`. To create a decorator, subclass `Pyrew.Deco` and implement a `wrapper` function.
+
+Here is an example of a decorator that checks how long a function takes to execute:
+
+```py
+import pyrew
+import time
+
+pyrew = pyrew.Pyrew()
+
+class Timer(pyrew.Deco):
+    def wrapper(self):
+        t1 = time.time()
+        self.func()
+        t2 = time.time()
+        print(t2 - t1)
+```
+
+
+You can use a decorator like this:
+
+```py
+@Timer
+def my_func():
+    pass
+
+my_func()
+```
+
 # End of Documentation

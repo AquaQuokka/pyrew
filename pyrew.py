@@ -2479,6 +2479,16 @@ class Pyrew:
                 Pyrew.put(f"\033[0;33mExecution time for {func.__name__} (elapsed)\033[0m\033[1;34m:\033[0m \033[0;36m{round(elapsed)}\033[0m\033[0;35mms\033[0m")
 
             return wrapper
+        
+    class Deco:
+        def __init__(self, func):
+            self.func = func
+
+        def __call__(self, *args, **kwargs):
+            return self.wrapper(*args, **kwargs)
+
+        def wrapper(self, *args, **kwargs):
+            raise NotImplementedError("Subclasses must implement the 'wrapper' method.")
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
