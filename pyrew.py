@@ -34,6 +34,7 @@ import turtle
 import art
 import ast
 import urllib
+import functools
 import requests
 import decimal
 from PIL import Image
@@ -49,7 +50,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.24.2.1"
+__version__ = "0.24.3"
 
 
 """
@@ -405,6 +406,7 @@ class Pyrew:
                     finally:
                         os.chdir(cfd)
 
+    """
     @staticmethod
     def spinner(func):
         
@@ -436,6 +438,7 @@ class Pyrew:
             spinner_thread.join()
             sys.stdout.write("Done!\n")
             sys.stdout.flush()
+    """
 
     class validate:
 
@@ -1882,7 +1885,7 @@ class Pyrew:
         def __str__(self):
             return '\n'.join([''.join(line) for line in self.lines])
     
-    class ansi:
+    class ANSI:
         def __init__(self, text: str, formats: Tuple[str]=(None)):
             self.text = text
             self.formats = formats
@@ -1957,6 +1960,481 @@ class Pyrew:
             else:
                 return f"{text}"
             
+        class Format:
+            RESET = "\033[0m"
+            BLACK = "\033[30m"
+            RED = "\033[31m"
+            GREEN = "\033[32m"
+            YELLOW = "\033[33m"
+            BLUE = "\033[34m"
+            MAGENTA = "\033[35m"
+            CYAN = "\033[36m"
+            WHITE = "\033[37m"
+
+            BRIGHT_BLACK = "\033[30;1m"
+            BRIGHT_RED = "\033[31;1m"
+            BRIGHT_GREEN = "\033[32;1m"
+            BRIGHT_YELLOW = "\033[33;1m"
+            BRIGHT_BLUE = "\033[34;1m"
+            BRIGHT_MAGENTA = "\033[35;1m"
+            BRIGHT_CYAN = "\033[36;1m"
+            BRIGHT_WHITE = "\033[37;1m"
+
+            BG_BLACK = "\033[40m"
+            BG_RED = "\033[41m"
+            BG_GREEN = "\033[42m"
+            BG_YELLOW = "\033[43m"
+            BG_BLUE = "\033[44m"
+            BG_MAGENTA = "\033[45m"
+            BG_CYAN = "\033[46m"
+            BG_WHITE = "\033[47m"
+
+            BG_BRIGHT_BLACK = "\033[40;1m"
+            BG_BRIGHT_RED = "\033[41;1m"
+            BG_BRIGHT_GREEN = "\033[42;1m"
+            BG_BRIGHT_YELLOW = "\033[43;1m"
+            BG_BRIGHT_BLUE = "\033[44;1m"
+            BG_BRIGHT_MAGENTA = "\033[45;1m"
+            BG_BRIGHT_CYAN = "\033[46;1m"
+            BG_BRIGHT_WHITE = "\033[47;1m"
+
+            BOLD = "\033[1m"
+            FAINT = "\033[2m"
+            ITALIC = "\033[3m"
+            UNDERLINE = "\033[4m"
+            BLINK = "\033[5m"
+            NEGATIVE = "\033[7m"
+            CROSSED = "\033[9m"
+        
+        @staticmethod
+        def black(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BLACK, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def red(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.RED, end="")
+                result = func(*args, **kwargs)  
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def green(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.GREEN, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def yellow(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.YELLOW, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def blue(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BLUE, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def magenta(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.MAGENTA, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+
+            return wrapper
+        
+        @staticmethod
+        def cyan(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.CYAN, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def white(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.WHITE, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def black_bright(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BRIGHT_BLACK, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+
+        @staticmethod
+        def red_bright(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BRIGHT_RED, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def green_bright(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BRIGHT_GREEN, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def yellow_bright(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BRIGHT_YELLOW, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def blue_bright(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BRIGHT_BLUE, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def magenta_bright(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BRIGHT_MAGENTA, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def cyan_bright(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BRIGHT_CYAN, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+
+            return wrapper
+        
+        @staticmethod
+        def white_bright(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BRIGHT_WHITE, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def black_bg(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BG_BLACK, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def red_bg(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BG_RED, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def green_bg(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BG_GREEN, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def yellow_bg(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BG_YELLOW, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def blue_bg(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BG_BLUE, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def magenta_bg(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BG_MAGENTA, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def cyan_bg(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BG_CYAN, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def white_bg(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BG_WHITE, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def black_bright_bg(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BG_BRIGHT_BLACK, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def red_bright_bg(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BG_BRIGHT_RED, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def green_bright_bg(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BG_BRIGHT_GREEN, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def yellow_bright_bg(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BG_BRIGHT_YELLOW, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def blue_bright_bg(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BG_BRIGHT_BLUE, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def magenta_bright_bg(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BG_BRIGHT_MAGENTA, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def cyan_bright_bg(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BG_BRIGHT_CYAN, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def white_bright_bg(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BG_BRIGHT_WHITE, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def bold(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BOLD, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def faint(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.FAINT, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def italic(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.ITALIC, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def under(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.UNDERLINE, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def blink(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.BLINK, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def negative(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.NEGATIVE, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+        
+        @staticmethod
+        def crossed(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                print(Pyrew.ANSI.Format.CROSSED, end="")
+                result = func(*args, **kwargs)
+                print(Pyrew.ANSI.Format.RESET, end="")
+                return result
+            
+            return wrapper
+            
     class Enum:
         def __init__(self, *keys):
             self._keys = set(keys)
@@ -1973,6 +2451,34 @@ class Pyrew:
     @staticmethod
     def xstr(input_str: str, *keys: str) -> bool:
         return input_str in [k for k in keys]
+
+    @staticmethod
+    def run(t):
+        def decorator(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                for _ in range(t):
+                    result = func(*args, **kwargs)
+
+                return result
+            
+            return wrapper
+        
+        return decorator
+
+    class debug:
+        @staticmethod
+        def time(func):
+            def wrapper():
+                start = (time.time() * 1000)
+                Pyrew.put(f"\033[0;32mTimer started!\033[0m")
+                func()
+                end = (time.time() * 1000)
+                Pyrew.put(f"\033[0;31mTimer ended!\033[0m")
+                elapsed = end - start
+                Pyrew.put(f"\033[0;33mExecution time for {func.__name__} (elapsed)\033[0m\033[1;34m:\033[0m \033[0;36m{round(elapsed)}\033[0m\033[0;35mms\033[0m")
+
+            return wrapper
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
