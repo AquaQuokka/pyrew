@@ -400,17 +400,17 @@ import pyrew
 
 pyrew = pyrew.Pyrew()
 
-seed = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-num = 100
-rounds = 10
-data = "Hello, world!"
+seed = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"                     # The seed from which the keys will be generated
+num = 100                                               # The number of keys to generate
+rounds = 10                                             # The number of times to encrypt
+data = "Hello, world!"                                  # The data to encrypt
 
-keys = pyrew.encryption.germinate(seed, num, rounds)
+keys = pyrew.encryption.germinate(seed, num, rounds)    # Generate keys
 
-encrypted = pyrew.encryption.encrypt(data, keys)
+encrypted = pyrew.encryption.encrypt(data, keys)        # Encrypt the data
 print(encrypted)
 
-decrypted = pyrew.encryption.decrypt(encrypted, keys)
+decrypted = pyrew.encryption.decrypt(encrypted, keys)   # Decrypt the data
 print(decrypted)
 ```
 
