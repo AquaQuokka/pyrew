@@ -50,7 +50,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.24.3"
+__version__ = "0.24.4.1"
 
 
 """
@@ -2466,6 +2466,7 @@ class Pyrew:
         
         return decorator
 
+    """
     class debug:
         @staticmethod
         def time(func):
@@ -2479,6 +2480,7 @@ class Pyrew:
                 Pyrew.put(f"\033[0;33mExecution time for {func.__name__} (elapsed)\033[0m\033[1;34m:\033[0m \033[0;36m{round(elapsed)}\033[0m\033[0;35mms\033[0m")
 
             return wrapper
+    """
         
     class Deco:
         def __init__(self, func):
