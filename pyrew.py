@@ -37,6 +37,7 @@ import urllib
 import functools
 import requests
 import decimal
+import gc
 from PIL import Image
 from typing import Type, List, Tuple, Optional, TypeVar, Callable, Any, Union, overload, get_type_hints, Dict
 from tkinter import messagebox
@@ -50,7 +51,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.24.4.1"
+__version__ = "0.24.5"
 
 
 """
@@ -906,29 +907,55 @@ class Pyrew:
         """DANGER! Make sure that you know what you are doing when you use these functions!"""
 
         @staticmethod
-        def defattr(name: any, value: any):
+        def attr(name: any, value: any):
             setattr(builtins, name, value)
 
         @staticmethod
-        def redict(name: any, value: any):
+        def bidict(name: any, value: any):
             builtins.__dict__[name] = value
 
         @staticmethod
-        def globalmod(name: any, value: any):
+        def addglobal(name: any, value: any):
             globals()[name] = value
 
         @staticmethod
         def cdout(stream):
             return OutputStream(stream)
+        
+        @contextlib.contextmanager
+        def unsafe():
+            gc.disable()
+            
+            try:
+                yield
+            
+            finally:
+                gc.enable()
 
     class Double(float):
         def __new__(cls, value):
             if isinstance(value, str):
                 value = float(value)
+            
+            if isinstance(value, float):
+                value = float(str(value)[:4])
 
+            return super().__new__(cls, value)
+        
+        def __str__(self):
+            return '{:.2f}'.format(self)
+
+        def __repr__(self):
+            return 'Double({:.2f})'.format(self)
+
+    class RoundingDouble(float):
+        def __new__(cls, value):
+            if isinstance(value, str):
+                value = float(value)
+            
             if isinstance(value, float):
                 value = round(value, 2)
-                
+            
             return super().__new__(cls, value)
 
         def __str__(self):
@@ -2528,6 +2555,57 @@ class Pyrew:
                     decrypted_round += decrypted_char
                 decrypted_data = decrypted_round
             return decrypted_data
+    
+    class Array(list):
+        def __init__(self, eles):
+            self.ls = []
+            self.ls.extend(eles)
+
+        @property
+        def length(self):
+            return len(self.ls)
+        
+        @property
+        def final(self):
+            return len(self.ls) - 1
+        
+        def __repr__(self):
+            return [x for x in self.ls]
+        
+        def __str__(self):
+            return f"{self.ls}"
+        
+    class ArrayT(list):
+        def __init__(self, T, eles):
+            self._t = T
+            self.ls = []
+            self.scanner(eles)
+
+        def scanner(self, data):
+            _scanner_t = self._t
+
+            def wrapper(self, data: List[_scanner_t]):
+                for idx, ele in enumerate(data):
+                    if not isinstance(ele, _scanner_t):
+                        raise TypeError(f"ArrayT elements must be of type {'T'!r}, received {type(ele).__name__!r} element {ele!r} at index {idx}")
+                
+                self.ls.extend(data)
+            
+            wrapper(self, data)
+        
+        @property
+        def length(self):
+            return len(self.ls)
+        
+        @property
+        def final(self):
+            return len(self.ls) - 1
+        
+        def __repr__(self):
+            return [x for x in self.ls]
+        
+        def __str__(self):
+            return f"{self.ls}"
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
