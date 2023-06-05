@@ -421,4 +421,26 @@ The output of this will be:
 Hello, world!
 ```
 
+
+## `unpack()`
+
+Pyrew has an `unpack()` function for unpacking values to variables. 
+
+Here is an example of how to use it:
+
+```py
+import pyrew
+import random
+
+pyrew = pyrew.Pyrew()
+
+temp = lambda: random.randint(0, 100)
+x, y, z = pyrew.unpack(3, temp)
+del temp
+
+print(x)
+print(y)
+print(z)
+```
+
 # End of Documentation

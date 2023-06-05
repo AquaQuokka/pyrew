@@ -51,7 +51,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.24.6"
+__version__ = "0.24.7"
 
 
 """
@@ -2681,6 +2681,14 @@ class Pyrew:
     @staticmethod
     def arcval(val):
         return 1 / val
+
+    @staticmethod
+    def unpack(num, value):
+        try:
+            return [value() for _ in range(num)]
+
+        except TypeError:
+            return [value] * num
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
