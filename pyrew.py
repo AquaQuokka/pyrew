@@ -51,7 +51,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.24.5"
+__version__ = "0.24.6"
 
 
 """
@@ -1800,7 +1800,7 @@ class Pyrew:
         def __repr__(self):
             return repr(self.normalize())
 
-    class MutableStr:
+    class MuteString:
         def __init__(self, value=''):
             self._value = list(value)
         
@@ -1837,16 +1837,18 @@ class Pyrew:
         def replace(self, old, new):
             self._value = [new if c == old else c for c in self._value]
 
-    class IP:
+    class Host:
         def __init__(self, hostname=None):
             self.hostname = hostname
-
-        def fetch(self, hostname=None):
-            if hostname is not None:
-                ip_address = socket.gethostbyname(hostname)
+        
+        @property
+        def IP(self):
+            if self.hostname is not None:
+                ip_address = socket.gethostbyname(self.hostname)
             
             else:
-                ip_address = socket.gethostbyname(self.hostname)
+                shn = socket.gethostname()
+                ip_address = socket.gethostbyname(shn)
 
             return ip_address
     
@@ -2606,8 +2608,80 @@ class Pyrew:
         
         def __str__(self):
             return f"{self.ls}"
+        
+    class House:
+        def __init__(self, value=None):
+            if value is None:
+                value = {}
+
+            self._value = value
+
+        def __getattr__(self, attr):
+            if attr in self.__dict__:
+                return self.__dict__[attr]
+            
+            if attr in self._value:
+                return self._value[attr]
+            
+            if hasattr(self._value, attr):
+                value = getattr(self._value, attr)
+                if callable(value):
+                    return value
+                
+            raise AttributeError(f"'Dynamic' object has no attribute '{attr}'")
+
+        def __setattr__(self, attr, value):
+            if attr == '_value':
+                super().__setattr__(attr, value)
+            else:
+                if isinstance(self._value, dict):
+                    self._value[attr] = value
+                else:
+                    setattr(self._value, attr, value)
+
+        def __str__(self):
+            return str(self._value)
+
+        def __repr__(self):
+            return repr(self._value)
+        
+        def __iadd__(self, other):
+            self._value += other
+            return self
+
+        def __isub__(self, other):
+            self._value -= other
+            return self
+
+        def __imul__(self, other):
+            self._value *= other
+            return self
+
+        def __idiv__(self, other):
+            self._value /= other
+            return self
+
+        def __ipow__(self, other):
+            self._value **= other
+            return self
+
+        def __ifloordiv__(self, other):
+            self._value //= other
+            return self
+        
+        @property
+        def __values__(self):
+            if isinstance(self._value, dict):
+                return tuple(self._value.values())
+            elif isinstance(self._value, (list, tuple, set)):
+                return tuple(self._value)
+            else:
+                return ()
+
+    @staticmethod
+    def arcval(val):
+        return 1 / val
 
 setattr(builtins, "true", True)
 setattr(builtins, "false", False)
 setattr(builtins, "none", None)
-setattr(builtins, "void", None)
