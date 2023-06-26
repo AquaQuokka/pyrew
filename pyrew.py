@@ -51,7 +51,7 @@ except ImportError:
     pass
 
 
-__version__ = "0.24.7"
+__version__ = "0.24.7.1"
 
 
 """
@@ -2628,7 +2628,7 @@ class Pyrew:
                 if callable(value):
                     return value
                 
-            raise AttributeError(f"'Dynamic' object has no attribute '{attr}'")
+            raise AttributeError(f"'House' object has no attribute '{attr}'")
 
         def __setattr__(self, attr, value):
             if attr == '_value':
